@@ -1,0 +1,406 @@
+<!DOCTYPE html><html lang="pt-BR"><head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ESPERE! Temos uma oferta especial</title>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		:root {
+			--primary: #075E54;
+			--primary-dark: #054640;
+			--secondary: #25D366;
+			--light-bg: #ECE5DD;
+			--chat-bg: #DCF8C6;
+			--success: #4caf50;
+			--error: #e53935;
+			--warning: #ff9800;
+			--dark: #1a1a1a;
+			--gray: #677781;
+		}
+
+		body {
+			font-family: 'Poppins', sans-serif;
+			background-color: #ECE5DD;
+			color: #333;
+			line-height: 1.6;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+		}
+
+		/* Layout principal */
+		.downsell-screen {
+			width: 100%;
+			min-height: 100vh;
+			padding: 2rem 1rem;
+		}
+
+		/* Containers */
+		.whatsapp-container {
+			width: 100%;
+			max-width: 500px;
+			margin: 0 auto;
+			position: relative;
+		}
+
+		/* WhatsApp Header */
+		.whatsapp-header {
+			background-color: var(--primary);
+			color: white;
+			padding: 10px 16px;
+			display: flex;
+			align-items: center;
+			border-radius: 8px 8px 0 0;
+		}
+
+		.back-arrow {
+			margin-right: 30px;
+			font-size: 1.5rem;
+		}
+
+		.whatsapp-title {
+			font-size: 1.2rem;
+			font-weight: 500;
+		}
+
+		/* WhatsApp UI Elements */
+		.wa-section {
+			background-color: white;
+			border-radius: 8px;
+			padding: 16px;
+			margin-bottom: 16px;
+			box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+		}
+
+		.wa-alert-banner {
+			background-color: #ffebee;
+			border-left: 4px solid #e53935;
+			padding: 12px;
+			border-radius: 8px;
+			margin-bottom: 16px;
+		}
+		
+		.wa-final-offer-banner {
+			background-color: #fdebae;
+			border-left: 4px solid #ff9800;
+			padding: 12px;
+			border-radius: 8px;
+			margin-bottom: 16px;
+			text-align: center;
+		}
+
+		/* Tipografia */
+		.wa-title {
+			font-weight: 600;
+			color: #075E54;
+			font-size: 1.3rem;
+			margin-bottom: 0.5rem;
+		}
+
+		.wa-subtitle {
+			color: #555;
+			margin-bottom: 1rem;
+		}
+
+		/* Contagem regressiva */
+		.countdown-container {
+			display: flex;
+			justify-content: center;
+			margin: 1rem 0;
+			text-align: center;
+		}
+
+		.countdown-box {
+			background-color: var(--primary);
+			color: white;
+			padding: 8px;
+			margin: 0 5px;
+			border-radius: 5px;
+			width: 45px;
+			font-weight: bold;
+			font-size: 1.2rem;
+			box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+		}
+
+		.countdown-label {
+			font-size: 0.7rem;
+			color: white;
+			text-transform: uppercase;
+		}
+
+		.countdown-divider {
+			font-size: 1.2rem;
+			font-weight: bold;
+			padding: 8px 0;
+			color: var(--primary);
+		}
+
+		/* Lista de verificação */
+		.wa-check-list {
+			list-style-type: none;
+		}
+
+		.wa-check-list li {
+			position: relative;
+			padding-left: 1.8rem;
+			margin-bottom: 0.8rem;
+			line-height: 1.4;
+			color: #333;
+		}
+
+		.wa-check-list li::before {
+			content: "✓";
+			position: absolute;
+			left: 0;
+			top: 0;
+			color: var(--secondary);
+			font-weight: bold;
+		}
+
+		/* Pricing */
+		.wa-price-container {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin: 1rem 0;
+		}
+
+		.wa-price-old {
+			font-size: 1rem;
+			text-decoration: line-through;
+			color: #777;
+			margin-right: 0.5rem;
+		}
+
+		.wa-price-new {
+			font-size: 1.5rem;
+			font-weight: 700;
+			color: var(--primary);
+		}
+
+		/* Utilities */
+		.wa-highlight {
+			background-color: #dcf8c6;
+			padding: 0.8rem;
+			border-radius: 5px;
+			text-align: center;
+			font-weight: 500;
+			margin: 1rem 0;
+			color: #333;
+		}
+
+		/* Media queries */
+		@media (max-width: 600px) {
+			.whatsapp-header {
+				padding: 8px 12px;
+			}
+
+			.whatsapp-title {
+				font-size: 1rem;
+			}
+		}
+		
+		/* Botões Pepper personalizados */
+		.pepper-container {
+			width: auto;
+			max-width: 400px;
+			margin: 0 auto;
+		}
+
+		.pepper_btn {
+			background: #25d366;
+			background-image: -webkit-linear-gradient(top, #25d366, #1da951);
+			background-image: -moz-linear-gradient(top, #25d366, #1da951);
+			background-image: -ms-linear-gradient(top, #25d366, #1da951);
+			background-image: -o-linear-gradient(top, #25d366, #1da951);
+			background-image: -webkit-gradient(to bottom, #25d366, #1da951);
+			-webkit-border-radius: 10px;
+			-moz-border-radius: 10px;
+			border-radius: 10px;
+			color: #fff;
+			font-family: Arial;
+			font-size: 18px;
+			font-weight: 100;
+			padding: 10px 20px;
+			border: 1px solid #1da951;
+			text-decoration: none;
+			display: block;
+			cursor: pointer;
+			text-align: center;
+		}
+
+		.pepper_downsell {
+			color: #004faa;
+			font-family: Arial;
+			margin-top: 10px;
+			font-size: 16px!important;
+			font-weight: 100;
+			text-decoration: none;
+			display: block;
+			cursor: pointer;
+			text-align: center;
+		}
+
+		.wa-progress-container {
+			width: 100%;
+			background-color: #f0f0f0;
+			border-radius: 10px;
+			margin: 15px 0;
+			overflow: hidden;
+		}
+
+		.wa-progress-bar {
+			height: 20px;
+			background-color: var(--secondary);
+			width: 100%;
+			border-radius: 10px;
+			position: relative;
+			transition: width 0.5s;
+		}
+
+		.wa-progress-text {
+			text-align: center;
+			font-size: 0.8rem;
+			margin-top: 5px;
+			color: var(--gray);
+		}
+	</style>
+</head>
+<body>
+	<!-- Tela de Downsell -->
+	<div class="downsell-screen">
+		<div class="whatsapp-container">
+			<!-- Header estilo WhatsApp -->
+			<div class="whatsapp-header">
+				<span class="back-arrow">←</span>
+				<span class="whatsapp-title">Oferta Especial</span>
+			</div>
+			
+			<!-- Alerta -->
+			<div class="wa-section">
+				<div class="wa-alert-banner">
+					<h2 class="wa-title" style="color: #e53935;">ESPERE!</h2>
+					<p class="wa-subtitle">Entendemos que 17 dias pode ser muito tempo para esperar...</p>
+				</div>
+				
+				<div class="wa-highlight" style="background-color: #fff3cd; margin: 1rem 0; padding: 12px; text-align: center; font-weight: 500; border-radius: 5px;">
+					Sua curiosidade vai aguentar 17 dias de espera? Pare a tortura agora e descubra a verdade nas mensagens do WhatsApp hoje mesmo – com acesso prioritário por apenas R$39,90!
+				</div>
+				
+				<h3 class="wa-title">Oferta por tempo limitado!</h3>
+				
+				<!-- Contagem regressiva -->
+				<p style="text-align: center; margin-top: 1rem;">Esta oferta expira em:</p>
+				<div class="countdown-container">
+					<div class="countdown-box">
+						<div id="countdown-minutes">10</div>
+						<div class="countdown-label">min</div>
+					</div>
+					<div class="countdown-divider">:</div>
+					<div class="countdown-box">
+						<div id="countdown-seconds">00</div>
+						<div class="countdown-label">seg</div>
+					</div>
+				</div>
+				
+				<!-- Oferta especial -->
+				<div class="wa-final-offer-banner">
+					<h3 class="wa-title" style="color: #e65100;">OFERTA FINAL - APENAS HOJE</h3>
+				</div>
+				
+				<p style="text-align: center; margin-bottom: 1rem;">Por apenas:</p>
+				
+				<div class="wa-price-container">
+					<span class="wa-price-old">R$67,90</span>
+					<span class="wa-price-new">R$39,90</span>
+				</div>
+				
+				<div class="wa-highlight">
+					Economize R$28,00 agora mesmo!
+				</div>
+			</div>
+			
+			<div class="wa-section">
+				<h3 class="wa-title">Com esta oferta você recebe:</h3>
+				<ul class="wa-check-list">
+					<li>Acesso imediato aos dados exportados</li>
+					<li>Pule a fila de <span id="queue-position">19.999</span> pessoas</li>
+					<li>Download de todas as mensagens e mídias</li>
+					<li>Suporte 24 horas por 30 dias</li>
+					<li>Garantia de reembolso de 7 dias</li>
+				</ul>
+				
+				<!-- Barra de progresso da fila -->
+				<div class="wa-progress-container">
+					<div id="queue-progress-bar" class="wa-progress-bar"></div>
+				</div>
+				<div class="wa-progress-text">A fila está diminuindo rapidamente! Não perca sua chance.</div>
+			</div>
+			
+			<div class="wa-section" style="text-align: center;">
+				<!-- Botões Pepper -->
+				<div style="width: auto; max-width: 400px;">
+					<a href="https://go.perfectpay.com.br/PPU38CPNK23?upsell=true" class="pepper_btn">SIM, EU ACEITO ESSA OFERTA</a>
+					<a href="javascript:void(0)" data-downsell="https://appwhatspy.com/fila" class="pepper_downsell">Vou recusar essa oferta</a> <!-- /// VISELL: COLOCAR AQUI SEU  CHECKOUT- -->
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// Pegar parâmetros da URL
+			const urlParams = new URLSearchParams(window.location.search);
+			const numero = urlParams.get('numero');
+			const nome = urlParams.get('nome');
+			const custName = urlParams.get('cust_name') || nome;
+			
+			// Configurar o botão "Não, quero esperar na fila"
+			document.querySelector('.pepper_downsell').addEventListener('click', function(e) {
+				// O redirecionamento será tratado pelo atributo data-downsell
+				// Não precisamos fazer mais nada aqui
+			});
+			
+			// Configurar a contagem regressiva
+			let minutes = 10;
+			let seconds = 0;
+			
+			const minutesEl = document.getElementById('countdown-minutes');
+			const secondsEl = document.getElementById('countdown-seconds');
+			
+			const countdownInterval = setInterval(function() {
+				if (seconds === 0) {
+					if (minutes === 0) {
+						clearInterval(countdownInterval);
+						return;
+					}
+					minutes--;
+					seconds = 59;
+				} else {
+					seconds--;
+				}
+				
+				minutesEl.textContent = minutes < 10 ? '0' + minutes : minutes;
+				secondsEl.textContent = seconds < 10 ? '0' + seconds : seconds;
+			}, 1000);
+			
+			// Configurar a animação da barra de progresso regressiva
+			const progressBar = document.getElementById('queue-progress-bar');
+			let width = 100;
+			const progressInterval = setInterval(function() {
+				if (width <= 0) {
+					clearInterval(progressInterval);
+				} else {
+					width -= 0.2;
+					progressBar.style.width = width + '%';
+				}
+			}, 500);
+		});
+	</script>
+	<script src="js/oneclick.js"></script>
+
+ </body></html>

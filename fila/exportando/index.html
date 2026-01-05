@@ -1,0 +1,1097 @@
+<html lang="pt-BR"><head></head><body>
+<script disable-devtool-auto="" src="https://cdn.jsdelivr.net/npm/disable-devtool" url="https://youtu.be/3W4aWnPoRy8?si=jUzCI55TpmEXM3Yw"></script>
+
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "s7truti9du");
+</script>
+
+<script>
+  window.pixelId = "680991de3aaa5ae5729ae4ef";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+  document.head.appendChild(a);
+</script>
+<script
+  src="https://cdn.utmify.com.br/scripts/utms/latest.js"
+  data-utmify-prevent-xcod-sck
+  data-utmify-prevent-subids
+  async
+  defer
+></script>
+
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>WhatsApp Espião - Exportando Dados</title>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		:root {
+			--primary: #075E54;
+			--primary-dark: #054640;
+			--secondary: #25D366;
+			--light-bg: #ECE5DD;
+			--chat-bg: #DCF8C6;
+			--success: #4caf50;
+			--error: #e53935;
+			--warning: #ff9800;
+			--dark: #1a1a1a;
+			--dark-light: #2c2c2c;
+			--gray: #677781;
+		}
+
+		body {
+			font-family: 'Poppins', sans-serif;
+			background-color: #111;
+			color: #fff;
+			line-height: 1.6;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+			overflow-x: hidden;
+			position: relative;
+		}
+
+		/* Layout principal */
+		.export-screen {
+			position: static; /* Mudando de absolute para static para garantir que o  seja exibido completamente */
+			width: 100%;
+			min-height: 100vh; /* Garantir altura  */
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: flex-start; /* Mudando para flex-start para permitir scroll adequado */
+			background: linear-gradient(135deg, #111, #000);
+			padding: 2rem 1.5rem;
+			overflow-y: visible; /* Permitir rolagem vertical */
+			margin-bottom: 2rem;
+		}
+
+		.queue-screen {
+			position: relative;
+			width: 100%;
+			min-height: 100vh;
+			background-color: #ECE5DD; /* Fundo estilo WhatsApp */
+			color: #303030;
+			overflow-y: auto;
+			padding: 1rem 0;
+		}
+
+		/* Containers */
+		.container {
+			width: 100%;
+			max-width: 500px;
+			padding: 1.5rem;
+			border-radius: 20px;
+			background: linear-gradient(145deg, #1e1e1e, #191919);
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+			margin: 0 auto;
+			position: relative;
+			overflow: hidden;
+		}
+
+		.whatsapp-container {
+			width: 100%;
+			max-width: 500px;
+			margin: 0 auto;
+			position: relative;
+		}
+
+		.container::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 5px;
+			background: linear-gradient(90deg, var(--secondary), var(--primary));
+		}
+
+		.section {
+			border-radius: 15px;
+			background-color: rgba(18, 140, 126, 0.1);
+			padding: 1.5rem;
+			margin-bottom: 1.5rem;
+			border-left: 3px solid var(--primary);
+		}
+
+		/* WhatsApp Header */
+		.whatsapp-header {
+			background-color: var(--primary);
+			color: white;
+			padding: 10px 16px;
+			display: flex;
+			align-items: center;
+			border-radius: 8px 8px 0 0;
+		}
+
+		.back-arrow {
+			margin-right: 30px;
+			font-size: 1.5rem;
+		}
+
+		.whatsapp-title {
+			font-size: 1.2rem;
+			font-weight: 500;
+		}
+
+		/* WhatsApp UI Elements */
+		.wa-section {
+			background-color: white;
+			border-radius: 8px;
+			padding: 16px;
+			margin-bottom: 16px;
+			box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+		}
+
+		.wa-success-banner {
+			background-color: var(--chat-bg);
+			border-left: 4px solid var(--secondary);
+			padding: 12px;
+			border-radius: 8px;
+			margin-bottom: 16px;
+		}
+
+		/* Tipografia */
+		h1, h2, h3, h4 {
+			color: #fff;
+			font-weight: 600;
+			line-height: 1.3;
+		}
+
+		h1 {
+			font-size: 1.8rem;
+			margin-bottom: 1rem;
+			text-align: center;
+			color: var(--secondary);
+		}
+
+		h2 {
+			font-size: 1.5rem;
+			margin-bottom: 1rem;
+			position: relative;
+			display: inline-block;
+		}
+
+		h2::after {
+			content: '';
+			position: absolute;
+			left: 0;
+			bottom: -5px;
+			width: 100%;
+			height: 2px;
+			background: linear-gradient(90deg, var(--secondary), transparent);
+		}
+
+		h3 {
+			font-size: 1.2rem;
+			color: var(--secondary);
+			margin-bottom: 1rem;
+		}
+
+		/*  do celular */
+		.phone-container {
+			margin-bottom: 2rem;
+		}
+
+		.phone {
+			width: 100px;
+			height: 180px;
+			background: linear-gradient(145deg, #222, #333);
+			border-radius: 20px;
+			padding: 8px;
+			margin: 0 auto;
+			position: relative;
+			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+			animation: float 3s ease-in-out infinite;
+		}
+
+		.phone-inner {
+			width: 100%;
+			height: 100%;
+			background: #000;
+			border-radius: 15px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			overflow: hidden;
+		}
+
+		.phone-screen {
+			position: relative;
+			width: 100%;
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		@keyframes float {
+			0%, 100% {
+				transform: translateY(0);
+			}
+			50% {
+				transform: translateY(-10px);
+			}
+		}
+
+		/* Texto de  */
+		.export-text {
+			font-size: 1.8rem;
+			font-weight: 600;
+			text-align: center;
+			margin-bottom: 2rem;
+			color: #fff;
+			text-shadow: 0 0 10px rgba(37, 211, 102, 0.5);
+		}
+
+		/* Pontos de carregamento */
+		.dots {
+			display: inline-flex;
+			margin-left: 5px;
+		}
+
+		.dot {
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			background-color: var(--secondary);
+			margin: 0 2px;
+			animation: pulse 1.4s infinite ease-in-out both;
+		}
+
+		.dot:nth-child(1) {
+			animation-delay: 0s;
+		}
+
+		.dot:nth-child(2) {
+			animation-delay: 0.2s;
+		}
+
+		.dot:nth-child(3) {
+			animation-delay: 0.4s;
+		}
+
+		@keyframes pulse {
+			0%, 80%, 100% { 
+				transform: scale(0.6);
+				opacity: 0.2;
+			}
+			40% { 
+				transform: scale(1);
+				opacity: 1;
+			}
+		}
+
+		/* Status de  */
+		.status-list {
+			width: 100%;
+			margin-bottom: 2rem; /*  extra no final da lista */
+		}
+
+		.status-item {
+			margin-bottom: 1rem;
+			opacity: 0;
+			transform: translateY(10px);
+			transition: opacity 0.5s ease, transform 0.5s ease;
+			display: none;
+			background-color: rgba(255, 255, 255, 0.05);
+			border-radius: 10px;
+			padding: 1rem;
+		}
+
+		.status-item.visible {
+			opacity: 1;
+			transform: translateY(0);
+			display: block;
+		}
+
+		.status-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			font-weight: 600;
+			font-size: 1rem;
+			margin-bottom: 0.5rem;
+		}
+
+		.status-details {
+			font-size: 0.9rem;
+			color: var(--gray);
+			padding-left: 10px;
+			border-left: 2px solid rgba(255, 255, 255, 0.1);
+			margin-left: 5px;
+			margin-top: 0.5rem;
+			display: none;
+		}
+
+		.status-details.visible {
+			display: block;
+		}
+
+		.status-icon {
+			width: 24px;
+			height: 24px;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 12px;
+			color: #fff;
+			font-weight: bold;
+			display: none;
+		}
+
+		.status-icon.visible {
+			display: flex;
+		}
+
+		.icon-success {
+			background-color: var(--success);
+		}
+
+		.icon-error {
+			background-color: var(--error);
+		}
+
+		.icon-warning {
+			background-color: var(--warning);
+		}
+
+		/* Spinner */
+		.spinner {
+			display: inline-block;
+			width: 40px;
+			height: 40px;
+			border: 4px solid rgba(37, 211, 102, 0.2);
+			border-top-color: var(--secondary);
+			border-radius: 50%;
+			animation: spin 1s infinite linear;
+		}
+
+		@keyframes spin {
+			0% {
+				transform: rotate(0deg);
+			}
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+
+		/* Queue Screen */
+		.wa-success-icon {
+			width: 60px;
+			height: 60px;
+			background-color: var(--secondary);
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 1.8rem;
+			color: white;
+			margin: 0 auto 1rem;
+			box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+		}
+
+		.wa-title {
+			font-weight: 600;
+			color: #075E54;
+			font-size: 1.3rem;
+			margin-bottom: 0.5rem;
+		}
+
+		.wa-subtitle {
+			color: #555;
+			margin-bottom: 1rem;
+		}
+
+		.wa-queue-count {
+			font-size: 1.5rem;
+			font-weight: 700;
+			color: var(--primary);
+			margin: 0.5rem 0;
+			text-align: center;
+		}
+
+		.wa-queue-time {
+			color: #555;
+			text-align: center;
+			margin-bottom: 1rem;
+		}
+
+		/* Lista de  */
+		.wa-check-list {
+			list-style-type: none;
+		}
+
+		.wa-check-list li {
+			position: relative;
+			padding-left: 1.8rem;
+			margin-bottom: 0.8rem;
+			line-height: 1.4;
+			color: #333;
+		}
+
+		.wa-check-list li::before {
+			content: "✅";
+			position: absolute;
+			left: 0;
+			top: 0;
+			color: var(--secondary);
+			font-weight: bold;
+		}
+
+		/* Pricing */
+		.wa-price-container {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin: 1rem 0;
+		}
+
+		.wa-price-old {
+			font-size: 1rem;
+			text-decoration: line-through;
+			color: #777;
+			margin-right: 0.5rem;
+		}
+
+		.wa-price-new {
+			font-size: 1.5rem;
+			font-weight: 700;
+			color: var(--primary);
+		}
+
+		/* Utilities */
+		.hidden {
+			display: none !important;
+		}
+
+		.wa-highlight {
+			background-color: #dcf8c6;
+			padding: 0.8rem;
+			border-radius: 5px;
+			text-align: center;
+			font-weight: 500;
+			margin: 1rem 0;
+			color: #333;
+		}
+
+		/* Media queries */
+		@media (max-width: 600px) {
+			.container {
+				padding: 1rem;
+			}
+
+			.section {
+				padding: 1rem;
+			}
+
+			.export-text {
+				font-size: 1.5rem;
+			}
+
+			.phone {
+				width: 80px;
+				height: 150px;
+			}
+
+			.whatsapp-header {
+				padding: 8px 12px;
+			}
+
+			.whatsapp-title {
+				font-size: 1rem;
+			}
+		}
+
+		/*  de  */
+		.fade-out {
+			opacity: 0;
+			transform: translateY(-20px);
+			transition: opacity 0.5s ease, transform 0.5s ease;
+		}
+
+		.fade-in {
+			opacity: 1;
+			transform: translateY(0);
+			transition: opacity 0.5s ease, transform 0.5s ease;
+		}
+		
+		/*  Pepper personalizados */
+		.pepper-container {
+			width: auto;
+			max-width: 400px;
+			margin: 0 auto;
+		}
+
+		/* Barra de progresso */
+		.progress-container {
+			width: 100%;
+			height: 10px;
+			background-color: rgba(0, 0, 0, 0.1);
+			border-radius: 10px;
+			margin: 1rem 0;
+			overflow: hidden;
+		}
+
+		.progress-bar {
+			height: 100%;
+			background: linear-gradient(to right, var(--secondary), var(--primary));
+			width: 5%;
+			border-radius: 10px;
+			transition: width 0.5s ease-in-out;
+		}
+
+		/* Notifices de pessoas pulando a fila - estilo flutuante */
+		.notifications-float-container {
+			position: fixed;
+			top: 20px;
+			right: 20px;
+			width: 300px;
+			max-width: 90%;
+			z-index: 9999;
+			pointer-events: none;
+		}
+
+		.notification-float {
+			background-color: white;
+			border-left: 3px solid var(--secondary);
+			color: #333;
+			padding: 12px 15px;
+			margin-bottom: 10px;
+			border-radius: 8px;
+			font-size: 0.9rem;
+			display: flex;
+			align-items: center;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+			animation: slideInRight 0.5s ease forwards, fadeOut 0.5s ease 5.5s forwards;
+			transform: translateX(120%);
+			opacity: 0;
+			pointer-events: auto;
+		}
+
+		.notification-float .notification-icon {
+			min-width: 36px;
+			height: 36px;
+			background-color: var(--secondary);
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-right: 10px;
+			color: white;
+			font-weight: bold;
+			font-size: 15px;
+		}
+
+		.notification-float .notification-message {
+			flex: 1;
+			line-height: 1.3;
+		}
+
+		.notification-float .notification-time {
+			color: #666;
+			font-size: 0.75rem;
+			margin-left: 8px;
+		}
+
+		@keyframes slideInRight {
+			from {
+				transform: translateX(120%);
+				opacity: 0;
+			}
+			to {
+				transform: translateX(0);
+				opacity: 1;
+			}
+		}
+
+		@keyframes fadeOut {
+			from {
+				opacity: 1;
+				transform: translateX(0);
+			}
+			to {
+				opacity: 0;
+				transform: translateX(10%);
+			}
+		}
+	</style>
+
+
+	<!-- Tela de Export -->
+	<div id="export-screen" class="export-screen">
+		<div class="container">
+			<div class="phone-container">
+				<div class="phone">
+					<div class="phone-inner">
+						<div class="phone-screen">
+							<div class="spinner"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="export-text">
+				EXPORTANDO<span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
+			</div>
+
+			<div class="status-list">
+				<!-- Status 1 -->
+				<div id="status-1" class="status-item">
+					<div class="status-header">
+						<span>CONEXÃO SEGURA ESTABELECIDA</span>
+						<div id="dots-1" class="dots">
+							<span class="dot"></span>
+							<span class="dot"></span>
+							<span class="dot"></span>
+						</div>
+						<div id="icon-1" class="status-icon icon-success hidden">✅</div>
+					</div>
+					<div id="details-1" class="status-details">
+						Conectado aos servidores do WhatsApp...
+					</div>
+				</div>
+
+				<!-- Status 2 -->
+				<div id="status-2" class="status-item">
+					<div class="status-header">
+						<span>DECRIPTANDO MENSAGENS (AES-256)</span>
+						<div id="dots-2" class="dots">
+							<span class="dot"></span>
+							<span class="dot"></span>
+							<span class="dot"></span>
+						</div>
+						<div id="icon-2" class="status-icon icon-success hidden">✅</div>
+					</div>
+					<div id="details-2" class="status-details">
+						Chave privada validada: 0x7d3f...a9c1
+					</div>
+				</div>
+
+				<!-- Status 3 -->
+				<div id="status-3" class="status-item">
+					<div class="status-header">
+						<span>CAPTURANDO MÍDIAS E ARQUIVOS</span>
+						<div id="dots-3" class="dots">
+							<span class="dot"></span>
+							<span class="dot"></span>
+							<span class="dot"></span>
+						</div>
+						<div id="icon-3" class="status-icon icon-success hidden">✅</div>
+					</div>
+					<div id="details-3" class="status-details">
+						3.7 GB detectados (48% transferidos)
+					</div>
+				</div>
+				
+				<!-- Status 4 -->
+				<div id="status-4" class="status-item">
+					<div class="status-header">
+						<span>ANALISANDO PADRÕES DE USO</span>
+						<div id="dots-4" class="dots">
+							<span class="dot"></span>
+							<span class="dot"></span>
+							<span class="dot"></span>
+						</div>
+						<div id="icon-4" class="status-icon icon-success hidden">✅</div>
+					</div>
+					<div id="details-4" class="status-details">
+						127 conversas ativas entre 02/2022 e 03/2025
+					</div>
+				</div>
+				
+				<!-- Status 5 -->
+				<div id="status-5" class="status-item">
+					<div class="status-header">
+						<span>DETECTANDO FIREWALL DE SEGURANA</span>
+						<div id="dots-5" class="dots">
+							<span class="dot"></span>
+							<span class="dot"></span>
+							<span class="dot"></span>
+						</div>
+						<div id="icon-5" class="status-icon icon-success hidden">✅</div>
+					</div>
+					<div id="details-5" class="status-details">
+						Segurança verificada e aprovada
+					</div>
+				</div>
+				
+				<!-- Status 6 -->
+				<div id="status-6" class="status-item">
+					<div class="status-header">
+						<span>FINALIZANDO EXPORTAÇÃO</span>
+						<div id="dots-6" class="dots">
+							<span class="dot"></span>
+							<span class="dot"></span>
+							<span class="dot"></span>
+						</div>
+						<div id="icon-6" class="status-icon icon-success hidden">✅</div>
+					</div>
+					<div id="details-6" class="status-details">
+						Dados exportados com sucesso
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Tela de Fila de Exportao (Estilo WhatsApp) -->
+	<div id="queue-screen" class="queue-screen hidden">
+		<div class="whatsapp-container">
+			<!-- Header estilo WhatsApp -->
+			<div class="whatsapp-header">
+				<span class="back-arrow"></span>
+				<span class="whatsapp-title">Status da Exportação</span>
+			</div>
+			
+			<!-- Contedo principal -->
+			<div class="wa-section">
+				<div class="wa-success-banner">
+					<div class="wa-success-icon">✅</div>
+					<h2 class="wa-title">Dados exportados com sucesso!</h2>
+					<p class="wa-subtitle">Seu conteúdo foi preparado e está na fila para download</p>
+				</div>
+				
+				<h3 class="wa-title" style="color: #075E54; margin-top: 1rem;">Status da Fila</h3>
+				<div class="wa-queue-count">
+					<span id="queue-position">19.999</span> pessoas na fila
+				</div>
+				
+				<!-- Barra de progresso -->
+				<div class="progress-container">
+					<div id="queue-progress-bar" class="progress-bar"></div>
+				</div>
+				
+				<div class="wa-queue-time">
+					Tempo estimado: <span id="queue-time">17 dias, 2 horas e 56 minutos</span>
+				</div>
+			</div>
+			
+			<div class="wa-section">
+				<h3 class="wa-title" style="color: #075E54;">Informações do Download</h3>
+				<ul class="wa-check-list">
+					<li>Tamanho total: <strong>3.7 GB de mensagens/mídias</strong></li>
+					<li>Arquivos incluídos: <strong>Mensagens, fotos, vídeos, áudios</strong></li>
+					<li>Período: <strong>últimos 10 meses</strong></li>
+					<li>última atualização: <strong><span id="current-time3">[HORA ATUAL]</span></strong></li>
+				</ul>
+			</div>
+			
+			<div class="wa-section">
+				<h3 class="wa-title" style="color: #075E54;">Acesso Prioritório</h3>
+				<div class="wa-highlight">
+					PACOTE ACESSO PRIORITÓRIO
+				</div>
+				
+				<div class="wa-price-container">
+					<span class="wa-price-old">R$97,90</span>
+					<span class="wa-price-new">R$34,90</span>
+				</div>
+				
+				<ul class="wa-check-list">
+					<li>Pule a fila de <span id="queue-position2">19.943</span> pessoas</li>
+					<li>Receba acesso prioritário aos dados</li>
+					<li>Download imediato de todo o conteúdo</li>
+					<li>Inclui suporte prioritário para dívidas</li>
+				</ul>
+				
+				<div class="wa-highlight">
+					"98,7% dos usuários optaram pelo acesso prioritário"
+				</div>
+			</div>
+			
+			<div class="wa-section" style="text-align: center;">
+				<!-- Botes Pepper -->
+				<div class="pepper-container">
+					<a href="https://go.perfectpay.com.br/PPU38CPND3Q?upsell=true" class="pepper_btn">Quero Pular a Fila</a> <!--  VISELL: COLOCAR AQUI SEU  CHECKOUT-->
+				</div>
+				<style>
+					.pepper_btn {
+						background: #25d366;
+						background-image: -webkit-linear-gradient(top, #25d366, #1da951);
+						background-image: -moz-linear-gradient(top, #25d366, #1da951);
+						background-image: -ms-linear-gradient(top, #25d366, #1da951);
+						background-image: -o-linear-gradient(top, #25d366, #1da951);
+						background-image: -webkit-gradient(to bottom, #25d366, #1da951);
+						-webkit-border-radius: 10px;
+						-moz-border-radius: 10px;
+						border-radius: 10px;
+						color: #fff;
+						font-family: Arial;
+						font-size: 18px;
+						font-weight: 100;
+						padding: 10px 20px;
+						border: 1px solid #1da951;
+						text-decoration: none;
+						display: block;
+						cursor: pointer;
+						text-align: center
+					}
+
+					.pepper_downsell {
+						color: #004faa;
+						font-family: Arial;
+						margin-top: 10px;
+						font-size: 16px!important;
+						font-weight: 100;
+						text-decoration: none;
+						display: block;
+						cursor: pointer;
+						text-align: center
+					}
+				</style>
+			</div>
+		</div>
+	</div>
+
+	<!-- Container para notificaes flutuantes -->
+	<div id="notifications-float-container" class="notifications-float-container"></div>
+
+	<script src="js/oneclick.js"></script>
+
+	<script>
+		// Formatao e utilidades
+		function getCurrentTime() {
+			const now = new Date();
+			return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+		}
+		
+		function formatNumber(num) {
+			return num.toLocaleString('pt-BR');
+		}
+		
+		// Lista de nomes para notificaes
+		const names = [
+			"Ana Silva", "João Santos", "Maria Oliveira", "Pedro Costa", "Carla Souza",
+			"Lucas Pereira", "Juliana Alves", "Roberto Fernandes", "Mariana Lima", "Fernando Torres",
+			"Amanda Rodrigues", "Carlos Gomes", "Patrícia Martins", "Gustavo Ribeiro", "Camila Ferreira",
+			"Bruno Castro", "Daniela Cardoso", "Marcos Vieira", "Vanessa Moreira", "Rafael Barbosa",
+			"Larissa Dias", "Luiz Mendes", "Tânia Araújo", "Fábio Correia", "Monica Santos", 
+			"Ricardo Nunes", "Paula Cavalcanti", "Alexandre Soares", "Cristina Borges", "Rodrigo Pacheco",
+			"Luciana Carvalho", "Márcio Nascimento", "Viviane Cruz", "Eduardo Machado", "Helena Costa",
+			"Marcelo Andrade", "Bianca Melo", "André Campos", "Natália Ramos", "Gabriel Teixeira",
+			"Elisa Rocha", "Renato Freitas", "Tatiane Lopes", "Diego Monteiro", "Cintia Duarte"
+		];
+		
+		// Funo para gerar uma  
+		function createRandomNotification() {
+			const name = names[Math.floor(Math.random() * names.length)];
+			const minutes = Math.floor(Math.random() * 59) + 1;
+			return {
+				name: name,
+				time: `${minutes} min atrás`
+			};
+		}
+
+		// Inicializao
+		document.addEventListener('DOMContentLoaded', function() {
+			// Definir a hora atual
+			document.getElementById('current-time3').textContent = getCurrentTime();
+			
+			// Pegar parmetros da URL
+			const urlParams = new URLSearchParams(window.location.search);
+			const numero = urlParams.get('numero');
+			const nome = urlParams.get('nome');
+			const custName = urlParams.get('cust_name') || nome;
+			
+			// Configurar links para manter parmetros URL
+			document.querySelectorAll('a[href^="../"]').forEach(link => {
+				const baseHref = link.getAttribute('href').split('?')[0];
+				const params = [];
+				
+				if (numero) params.push(`numero=${numero}`);
+				if (nome) params.push(`nome=${nome}`);
+				if (custName) params.push(`cust_name=${custName}`);
+				
+				const queryString = params.length > 0 ? `?${params.join('&')}` : '';
+				link.href = baseHref + queryString;
+			});
+			
+		
+			
+			// Iniciar a sequncia de animao
+			startStatusSequence();
+		});
+		
+		// Sequncia de status inicial
+		function startStatusSequence() {
+			const totalStatuses = 6;
+			let currentStatus = 1;
+			
+			function showNextStatus() {
+				if (currentStatus <= totalStatuses) {
+					const statusElement = document.getElementById(`status-${currentStatus}`);
+					statusElement.classList.add('visible');
+					
+					setTimeout(() => {
+						// Esconder os pontos e mostrar ícone
+						document.getElementById(`dots-${currentStatus}`).classList.add('hidden');
+						const iconElement = document.getElementById(`icon-${currentStatus}`);
+						iconElement.classList.remove('hidden');
+						iconElement.classList.add('visible');
+						
+						// Mostrar detalhes
+						setTimeout(() => {
+							document.getElementById(`details-${currentStatus}`).classList.add('visible');
+							
+							// Ir para proximo status ou mostrar tela de fila
+							setTimeout(() => {
+								currentStatus++;
+								if (currentStatus <= totalStatuses) {
+									showNextStatus();
+								} else {
+									// Mostrar a tela de fila apos todos os status
+									setTimeout(() => {
+										document.getElementById('export-screen').classList.add('fade-out');
+										setTimeout(() => {
+											document.getElementById('export-screen').classList.add('hidden');
+											document.getElementById('queue-screen').classList.remove('hidden');
+											
+											// Iniciar contador da fila e notificaes
+											startQueueCounter();
+											startNotifications();
+										}, 500);
+									}, 1000);
+								}
+							}, 1500);
+						}, 500);
+					}, 2000);
+				}
+			}
+			
+			// Iniciar a sequencia
+			setTimeout(showNextStatus, 1000);
+		}
+		
+		// Contador da fila e atualizao da barra de progresso
+		function startQueueCounter() {
+			const queuePosition = document.getElementById('queue-position');
+			const queuePosition2 = document.getElementById('queue-position2');
+			const queueTime = document.getElementById('queue-time');
+			const progressBar = document.getElementById('queue-progress-bar');
+			
+			let currentPosition = 19999;
+			const initialPosition = currentPosition;
+			
+			// Configurar a barra de progresso inicial - garantir que seja visvel
+			progressBar.style.width = '5%';
+			
+			// Primeira atualizao imediata
+			updateQueueDisplay();
+			
+			// Configurar intervalo para atualizaes a cada 30 segundos
+			const intervalId = setInterval(updateQueueDisplay, 30000);
+			
+			function updateQueueDisplay() {
+				// Diminuir uma pessoa na fila
+				currentPosition -= 1;
+				
+				// Atualizar os elementos na pgina
+				if (queuePosition) queuePosition.textContent = formatNumber(currentPosition);
+				if (queuePosition2) queuePosition2.textContent = formatNumber(currentPosition);
+				
+				// Atualizar a barra de progresso
+				updateProgressBar(initialPosition, currentPosition);
+				
+				// Calcular e atualizar o tempo estimado
+				const days = Math.floor(currentPosition / 1200);
+				const remainingForHours = currentPosition % 1200;
+				const hours = Math.floor(remainingForHours / 50);
+				const remainingForMinutes = remainingForHours % 50;
+				const minutes = Math.floor(remainingForMinutes * 60 / 50);
+				
+				// Formato do tempo em portugus
+				let timeText = '';
+				if (days > 0) {
+					timeText += `${days} dia${days > 1 ? 's' : ''}`;
+				}
+				if (hours > 0) {
+					timeText += `${timeText ? ', ' : ''}${hours} hora${hours > 1 ? 's' : ''}`;
+				}
+				if (minutes > 0) {
+					timeText += `${timeText ? ' e ' : ''}${minutes} minuto${minutes > 1 ? 's' : ''}`;
+				}
+				
+				if (queueTime) queueTime.textContent = timeText;
+			}
+			
+			// Atualizar a barra de progresso
+			function updateProgressBar(initial, current) {
+				const percentComplete = Math.max(5, ((initial - current) / initial) * 100);
+				progressBar.style.width = percentComplete + "%";
+			}
+		}
+		
+		//  para mostrar  de pessoas pulando a fila
+		function startNotifications() {
+			const container = document.getElementById('notifications-float-container');
+			
+			// Adicionar a primeira   3 segundos
+			setTimeout(() => addNotification(container), 3000);
+			
+			// Configurar intervalo para adicionar novas  a cada 8-15 segundos
+			setInterval(() => {
+				addNotification(container);
+			}, Math.random() * 7000 + 8000); // Entre 8 e 15 segundos
+			
+			//  para adicionar 
+			function addNotification(container) {
+				const notif = createRandomNotification();
+				
+				// Criar o elemento de 
+				const notificationDiv = document.createElement('div');
+				notificationDiv.className = 'notification-float';
+				
+				notificationDiv.innerHTML = `
+					<div class="notification-icon">✅</div>
+					<div class="notification-message"><strong>${notif.name}</strong> pulou a fila</div>
+					<div class="notification-time">agora</div>
+				`;
+				
+				// Adicionar a  ao container
+				container.appendChild(notificationDiv);
+				
+				// Remover a   6 segundos
+				setTimeout(() => {
+					if (container.contains(notificationDiv)) {
+						notificationDiv.style.animation = 'fadeOut 0.5s ease forwards';
+						setTimeout(() => {
+							if (container.contains(notificationDiv)) {
+								container.removeChild(notificationDiv);
+							}
+						}, 500);
+					}
+				}, 5500);
+			}
+		}
+	</script>
+	
+	
+	<script>
+    var urlBackRedirect = '/fila/descfila27/index.html'; // lembre-se de usar a url sem espaços
+    // não altere nada abaixo dessa linha
+    urlBackRedirect = urlBackRedirect = urlBackRedirect.trim() +
+            (urlBackRedirect.indexOf("?") > 0 ? '&' : '?') +
+            document.location.search.replace('?', '').toString();
+    history.pushState({}, "", location.href);
+    history.pushState({}, "", location.href);
+    window.onpopstate = function () {
+        setTimeout(function () {
+            location.href = urlBackRedirect;
+        }, 1);
+    };
+</script>
+	
+
+</body></html>

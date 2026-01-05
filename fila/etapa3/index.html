@@ -1,0 +1,338 @@
+<!DOCTYPE html><html lang="pt-br"><head>
+    <script disable-devtool-auto="" src="https://cdn.jsdelivr.net/npm/disable-devtool" url="https://youtu.be/3W4aWnPoRy8?si=jUzCI55TpmEXM3Yw"></script>
+    
+    <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "s7truti9du");
+</script>
+
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>APP Espião 3.0 🥇 - Whatsapp Web</title>
+    <link rel="stylesheet" href="css/DPgH4bm5qhlA.css">
+    <link rel="stylesheet" href="css/Sv8TQyFisORe.css">
+    <link rel="stylesheet" href="css/vISJlVsnGANX.css">
+    <link rel="stylesheet" href="css/iCbv2qnf15XL.css">
+<script async="" defer="" src="js/BE7N1BMCzY4O.js"></script></head>
+<body>
+    <div id="notification-container"></div>
+    <div id="popup-overlay" class="popup-overlay">
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <img src="images/MyYnDCi2nFMQ.webp" alt="WhatsSpy Logo" class="logo">
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="box">
+            <h1 class="main-title" id="status-title"><i class="fas fa-check-circle" style="color: #4CAF50;"></i> TUDO PRONTO <i class="fas fa-check-circle" style="color: #4CAF50;"></i></h1>
+
+            <div style="width: 100px; height: 100px; margin: 20px auto; position: relative;">
+                <img src="" id="fotoperfil" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;">
+            </div>
+
+            <p class="confirmation-message">O <span style="color: #4CAF50; font-weight: bold;">WhatsApp</span> de <span id="target-name">[NOME]</span> foi clonado às <span id="current-time">[hora atual]</span> com sucesso.</p>
+
+
+
+
+
+    <div class="audio-container" id="audioContainer">
+        <!-- Cole o link do Seu áudio Abaixo-->
+
+        <!-- Cole o link da Sua imagem Abaixo-->
+
+        <div class="microphone-icon">
+
+        </div>
+      </div>
+
+
+
+    <div class="divider"></div>
+    <p><strong>3 Compartilhamentos</strong> de <strong>localização suspeitas</strong> na cidade de <strong id="city-name">CIDADE</strong>.</p>
+    <div class="divider"></div>
+    <p><strong>Localização Suspeita</strong> localizada nos últimas 7 dias no <strong id="motel-name">MOTEL</strong>.</p>
+
+
+    <!-- SCRIPT MOTEL / MAPA -->
+    <style>
+        /* Estilo para o texto com a classe .motel */
+        .motel {
+            color: black; /* Define a cor do texto como preta */
+            font-family: 'Chakra Petch', sans-serif; /* Define a fonte como Chakra Petch */
+            text-align: center; /* Centraliza o texto */
+        }
+
+        /* Estilo para o contêiner e o iframe do mapa */
+        .iframe-container {
+            text-align: center; /* Centraliza o iframe horizontalmente */
+            margin-top: 20px;
+        }
+
+        .custom-iframe {
+            width: 100%; /* Ajuste para dispositivos móveis */
+            max-width: 600px; /* Limite a largura máxima */
+            height: 450px;
+            border: 0;
+        }
+
+    </style>
+       <script src="js/jquery-3.7.1.min.js"></script>
+    <script>
+    //     document.addEventListener('DOMContentLoaded', fetchLocationAndUpdateContent);
+
+    //     async function fetchLocationAndUpdateContent() {
+    //         try {
+    //             // Chamada para a API de IP para obter a cidade e o código da região
+    //             const ipResponse = await fetch("https://ipapi.co/json/");
+    //             const ipData = await ipResponse.json();
+    //             const city = ipData.city;
+    //             const region_code = ipData.region_code;
+
+    //             // Atualizar o texto com a classe .motel com o nome da cidade e região
+    //             const motelTextElement = document.querySelector('.motel');
+    //             if (motelTextElement) {
+    //                 motelTextElement.textContent = `Localizado em ${city}, ${region_code}`;
+    //             }
+
+    //             // Atualizar o iframe com o mapa baseado na localização (cidade + código da região)
+    //             const newIframeSrc = `https://www.google.com/maps/embed/v1/place?key=AIzaSyD1T-wct3ZaPmOHseqH1SjkiP5pAn4Pj3Y&q=Motel+${encodeURIComponent(city)}+${encodeURIComponent(region_code)}`;
+    //             const iframe = document.getElementById('customIframe');
+    //             if (iframe) {
+    //                 iframe.src = newIframeSrc;
+    //             }
+
+    //             // Substituir "CIDADE" pelo nome da cidade e "REGIÃO" pelo código da região na seção de compartilhamentos
+    //             const cityNameElement = document.getElementById('city-name');
+    //             if (cityNameElement) {
+    //                 cityNameElement.textContent = `${city}, ${region_code}`;
+    //             }
+
+    //         } catch (error) {
+    //             console.error('Ocorreu um erro:', error);
+    //         }
+    //     }
+
+    //
+    jQuery(function($) {
+            var city; // Default location in case of error
+            var region_code; // Default region code in case of error
+            var processStarted = false; // Flag para controlar se o processo já foi iniciado
+
+            // Fetch user location
+            $.get("https://ipinfo.io/json", function(response) {
+                console.log(response);
+                if (response && response.city) {
+                    city = response.city;
+                    region_code = response.region;
+                      // Atualizar o texto com a classe .motel com o nome da cidade e região
+                const motelTextElement = document.querySelector('.motel');
+                if (motelTextElement) {
+                    motelTextElement.textContent = `Localizado em ${city}, ${region_code}`;
+                }
+
+                // Atualizar o iframe com o mapa baseado na localização (cidade + código da região)
+                const newIframeSrc = `https://www.google.com/maps/embed/v1/place?key=AIzaSyD1T-wct3ZaPmOHseqH1SjkiP5pAn4Pj3Y&q=Motel+${encodeURIComponent(city)}+${encodeURIComponent(region_code)}`;
+                const iframe = document.getElementById('customIframe');
+                if (iframe) {
+                    iframe.src = newIframeSrc;
+                }
+
+                // Substituir "CIDADE" pelo nome da cidade e "REGIÃO" pelo código da região na seção de compartilhamentos
+                const cityNameElement = document.getElementById('city-name');
+                if (cityNameElement) {
+                    cityNameElement.textContent = `${city}, ${region_code}`;
+                }
+
+                }
+            }, "json");
+
+            console.log("userLoc",userLocation);
+        })
+
+    </script>
+
+
+    <!-- Contêiner para centralizar o iframe -->
+    <div class="iframe-container">
+        <iframe id="customIframe" class="custom-iframe" width="300" height="200" frameborder="0" referrerpolicy="no-referrer-when-downgrade" allowfullscreen="">
+        </iframe>
+    </div>
+
+
+    <div class="divider"></div>
+    <p id="gender-sensitive-text"><strong>13 mensagens continham a palavra / semelhante "Gostosa"</strong></p>
+    <div class="divider"></div>
+    <p><strong>9 mensagens</strong> continham a palavra / semelhante "<strong>Amor</strong>"</p>
+    <div class="divider"></div>
+    <p><strong>8 mensagens</strong> continham a palavra / semelhante "<strong>Segredo</strong>"</p>
+    <div class="divider"></div>
+    <p><strong>5 vídeos</strong> escondidos com senha no telefone...</p>
+    <div class="divider"></div>
+    <p><strong>2 conversas</strong> arquivadas foram sinalizadas como <strong>suspeitas.</strong></p>
+    <div class="divider"></div>
+
+    <p class="text-center" style="margin: 20px 0;">Todas as mensagens e mídias já estão salvas no nosso Banco de Dados, agora só falta você exportá-las.</p>
+
+    <a href="#" id="exportButton" class="cta-button">
+        <span id="exportText">EXPORTAR AGORA</span>
+        <span class="sub-text">E TENHA ACESSO TOTAL AO WHATSAPP</span>
+    </a>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <img src="images/MyYnDCi2nFMQ.webp" alt="WhatsSpy Logo" class="footer-logo">
+        <p>Termos de Uso - Políticas de Privacidade</p>
+        <p>WhatsSpy 2025 ©</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtém o nome do parâmetro da URL
+            const params = new URLSearchParams(window.location.search);
+            const nome = params.get('nome');
+
+            // Define o nome do alvo no título
+            if (nome) {
+                document.getElementById('target-name').textContent = nome;
+            } else {
+                document.getElementById('target-name').textContent = "seu alvo";
+            }
+
+            // Define a hora atual
+            const agora = new Date();
+            const horaAtual = agora.getHours().toString().padStart(2, '0') + ':' +
+                              agora.getMinutes().toString().padStart(2, '0');
+            document.getElementById('current-time').textContent = horaAtual;
+        });
+    </script>
+
+    <script>
+        document.getElementById('exportButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            const exportText = document.getElementById('exportText');
+            exportText.textContent = 'EXPORTANDO...';
+
+            setTimeout(function() {
+                // Preservar todos os parâmetros da URL atual
+                const params = new URLSearchParams(window.location.search);
+                const custName = params.get('cust_name') || localStorage.getItem('cust_name');
+
+                // Atualizar o cust_name nos parâmetros se existir
+                if (custName) {
+                    params.set('cust_name', custName);
+                    localStorage.setItem('cust_name', custName);
+                }
+
+                window.location.href = '../exportando/index.html?' + params.toString();
+            }, 3000);
+        });
+    </script>
+
+    <script src="js/YtvWM7xZfpfO.js" defer=""></script>
+    <!-- <script src="./js/script.js" defer></script> -->
+
+    <script>
+        window.onload = function () {
+            var links = document.getElementsByTagName("a");
+            for (var i = 0, n = links.length; i < n; i++) {
+                var href = links[i].href.trim() +
+                        (links[i].href.indexOf("?") > 0 ? '&' : '?') +
+                        document.location.search.replace('?', '').toString();
+                links[i].href = href;
+            }
+
+            // Adicionar código para carregar a foto de perfil
+            const params = new URLSearchParams(window.location.search);
+            const numero = params.get('numero');
+
+            if (numero) {
+                var headers = {
+                    "Client-Token": "F1b9c4eb4f6064d509f5db42154e14c42S",
+                };
+                var url = "https://api.z-api.io/instances/3E2AA7A0C12C209A06A82A9B2850D0B6/token/56E4B2EA2F7FF4D9D77E7FBA/profile-picture?phone=" + numero;
+                fetch(url, {
+                    method: "GET",
+                    headers: headers,
+                })
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    var fotoperfil = data.link;
+                    if (!fotoperfil) {
+                        document.getElementById("fotoperfil").src = "/fila/images/perfil.jpg";
+                    } else {
+                        document.getElementById("fotoperfil").src = fotoperfil;
+                    }
+                    document.cookie = "perfil=" + fotoperfil + "; path=/";
+                })
+                .catch(function(error) {
+                    document.getElementById("fotoperfil").src = "/fila/images/perfil.jpg";
+                });
+				// async function getImage(){
+				// 	const url = "https://w.imagens.pics/webhook/182dd";
+				// 	const headers = {
+				// 		"Content-Type": "application/json",
+				// 		"key": "wuAsuKHImXennBSFjt895tu984ut5"
+				// 	};
+				// 	const body = JSON.stringify({
+				// 		number: numero
+				// 	});
+
+				// 	const response = await fetch(url, {
+				// 		method: "POST",
+				// 		headers: headers,
+				// 		body: body
+				// 	});
+
+				// 	if (response.ok) {
+				// 		const responseData = await response.json();
+
+				// 		const fotoperfil = responseData.foto || "https://i.postimg.cc/gcNd6QBM/img1.jpg";
+				// 		setTimeout(function() {
+				// 			document.getElementById("fotoperfil").src = fotoperfil?? "/fila/images/perfil.jpg";
+
+				// 		document.cookie = "perfil=" + fotoperfil + "; path=/";
+				// 		}, 1000);
+				// 	} else {
+				// 		ocument.getElementById("fotoperfil").src = "https://i.postimg.cc/gcNd6QBM/img1.jpg";
+
+				// 		document.cookie = "perfil=" + "https://i.postimg.cc/gcNd6QBM/img1.jpg" + "; path=/";
+				// 		console.error('Erro na chamada da API:', response.status, response.statusText);
+				// 		document.getElementById('statusAnalise').innerHTML = 'Erro na chamada da API';
+				// 		// exibirImagemPadrao();
+				// 	}
+				// }
+				// getImage();
+            }
+        }
+    </script>
+    <script src="js/5vb79tL0Zox1.js"></script>
+
+    <!-- Adicionar Font Awesome para os ícones -->
+    <link rel="stylesheet" href="css/all.min.css">
+
+    <style>
+        .confirmation-message {
+            font-size: 18px;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+
+
+
+</body></html>
