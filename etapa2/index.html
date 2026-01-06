@@ -467,202 +467,275 @@ var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false
 </style>
 
 <script>
-/**
- * AJUSTADO PARA VERCEL (PROXY)
- * - NÃO chama mais api.z-api.io direto (evita CORS e 400)
- * - Usa /api/phone-exists e /api/profile-picture (serverless da Vercel)
- * - Normaliza número, atualiza texto e imagens em múltiplos IDs
- * - Fallbacks + logs úteis
- */
-
-(function () {
-  function getParam(name) {
-    return new URLSearchParams(window.location.search).get(name);
-  }
-
-  function onlyDigits(v) {
-    return String(v || "").replace(/\D/g, "");
-  }
-
-  function normalizarCelular(celular) {
-    let n = onlyDigits(celular);
-    if (n.length === 11) n = "55" + n;
-    return n;
-  }
-
-  function formatarCelularBR(celular) {
-    const n = onlyDigits(celular);
-    const m13 = n.match(/^55(\d{2})(\d{5})(\d{4})$/);
-    if (m13) return `+55 (${m13[1]}) ${m13[2]}-${m13[3]}`;
-    const m11 = n.match(/^(\d{2})(\d{5})(\d{4})$/);
-    if (m11) return `(${m11[1]}) ${m11[2]}-${m11[3]}`;
-    return n;
-  }
-
-  // Atualiza vários possíveis IDs de <img>
-  function setProfileImage(url) {
-    const fallback = "images/user.jpg";
-    const ids = ["imgProfile", "fotoperfil", "fotoperfiltoda", "perfiltfotto"];
-    const imgs = ids.map(id => document.getElementById(id)).filter(Boolean);
-
-    if (!imgs.length) {
-      console.warn("[FOTO] Nenhum <img> encontrado com IDs:", ids.join(", "));
-      return;
+document.addEventListener('DOMContentLoaded', function () {
+    const celular = new URLSearchParams(window.location.search).get('celular');
+    if (celular) {
+        chamarApi(celular);
+    } else {
+        exibirImagemPadrao();
     }
+});
 
-    imgs.forEach(img => {
-      img.onerror = () => { img.src = fallback; };
-      img.src = url || fallback;
-      img.classList.add("imagemArredondada");
-    });
-
-    console.log("[FOTO] Aplicada:", url || fallback);
-  }
-
-  function setStatus(txt) {
-    const el = document.getElementById("statusAnalise");
-    if (el) el.textContent = txt || "";
-  }
-
-  function setNumbers(formatted) {
-    const ids = ["numeroPerfil", "user-number", "numerocelular1", "numerocelular2", "numerocelular3", "numerocelular4"];
-    ids.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = formatted;
-    });
-  }
-
-  // ----- VERCEL API CALLS -----
-
-  async function callJson(url) {
-    const resp = await fetch(url, { method: "GET", cache: "no-store" });
-    const text = await resp.text();
-    let data;
-    try { data = JSON.parse(text); } catch { data = { raw: text }; }
-    return { ok: resp.ok, status: resp.status, data };
-  }
-
-  // Tenta inferir "existe" independente do nome do campo
-  function inferirExists(payload) {
-    const d = payload || {};
-    // comuns: exists, phoneExists, valid, isValid
-    if (typeof d.exists === "boolean") return d.exists;
-    if (typeof d.phoneExists === "boolean") return d.phoneExists;
-    if (typeof d.valid === "boolean") return d.valid;
-    if (typeof d.isValid === "boolean") return d.isValid;
-
-    // às vezes vem "status" ou "message"
-    // se não der pra inferir, retorna null (desconhecido)
-    return null;
-  }
-
-  function extrairFotoDoProxy(proxyJson) {
-    // Seu /api/profile-picture.js já normaliza para { profilePicture: "..." }
-    if (proxyJson && typeof proxyJson.profilePicture === "string" && proxyJson.profilePicture) {
-      return proxyJson.profilePicture;
-    }
-
-    // fallback: tentar formatos alternativos (caso você mude o backend)
-    if (proxyJson && proxyJson.data) {
-      const data = proxyJson.data;
-
-      if (Array.isArray(data) && data[0] && data[0].link) return data[0].link;
-      if (data && data.link) return data.link;
-      if (data && data.profilePicture) return data.profilePicture;
-    }
-
-    return "";
-  }
-
-  async function phoneExistsViaProxy(phone) {
-    const url = `/api/phone-exists?phone=${encodeURIComponent(phone)}`;
-    console.log("[PROXY exists] URL:", url);
-    const r = await callJson(url);
-    console.log("[PROXY exists] Status:", r.status, "Data:", r.data);
-    return r;
-  }
-
-  async function profilePictureViaProxy(phone) {
-    const url = `/api/profile-picture?phone=${encodeURIComponent(phone)}`;
-    console.log("[PROXY foto] URL:", url);
-    const r = await callJson(url);
-    console.log("[PROXY foto] Status:", r.status, "Data:", r.data);
-    return r;
-  }
-
-  // ----- INIT -----
-  document.addEventListener("DOMContentLoaded", async () => {
-    const celularParam = getParam("celular");
-    if (!celularParam) {
-      setStatus("Número ausente.");
-      setProfileImage("");
-      return;
-    }
-
-    const celular = normalizarCelular(celularParam);
-    const formatted = formatarCelularBR(celular);
-
-    console.log("[CELULAR] Param:", celularParam);
-    console.log("[CELULAR] Normalizado:", celular);
-    console.log("[CELULAR] Formatado:", formatted);
-
-    setNumbers(formatted);
-
+async function chamarApi(celular) {
     try {
-      localStorage.setItem("userNormalizedNumber", celular);
-      localStorage.setItem("userFormattedNumber", formatted);
-    } catch (e) {}
+        // garante só números
+        const numeroLimpo = celular.replace(/\D/g, "");
 
-    if (onlyDigits(celular).length !== 13) {
-      setStatus("Número inválido para foto.");
-      setProfileImage("");
-      return;
+        const url =
+            "https://api.z-api.io/instances/3ECCFA4C9CB792573C2172442EF70706" +
+            "/token/7B7E4132ACCFACF210AE5E4E" +
+            "/profile-picture?phone=" + encodeURIComponent(numeroLimpo);
+
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                "Client-Token": "3ECCFA4C9CB792573C2172442EF70706"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Erro HTTP " + response.status);
+        }
+
+        const data = await response.json();
+
+        const fotoperfil = data && data.link
+            ? data.link
+            : "https://i.postimg.cc/gcNd6QBM/img1.jpg";
+
+        atualizarImagem(fotoperfil);
+        localStorage.setItem("fotoperfil", fotoperfil);
+
+        // Formatar e exibir o número
+        let novoNumero = numeroLimpo
+            .replace(/^(\d{2})(\d{2})(\d{5})(\d{4})$/, "+$1 ($2) $3-$4")
+            .replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+
+        const numeroEl = document.getElementById('numeroPerfil');
+        if (numeroEl) numeroEl.innerHTML = novoNumero;
+
+        const statusEl = document.getElementById('statusAnalise');
+        if (statusEl) statusEl.innerHTML = '';
+
+    } catch (error) {
+        console.error('[LEGADO] Erro na chamada da API:', error);
+        exibirImagemPadrao();
+
+        const statusEl = document.getElementById('statusAnalise');
+        if (statusEl) statusEl.innerHTML = 'Erro ao carregar foto';
     }
+}
 
-    try {
-      setStatus("Verificando número...");
-
-      // 1) opcional: checa se número existe
-      const existsResp = await phoneExistsViaProxy(celular);
-
-      // Se o proxy falhar (500/401/etc), ainda tentamos buscar foto
-      let exists = null;
-      if (existsResp.ok) exists = inferirExists(existsResp.data);
-
-      // Se der pra inferir que NÃO existe, não tenta foto
-      if (exists === false) {
-        console.warn("[EXISTS] Número não existe / inválido segundo a API.");
-        setStatus("");
-        setProfileImage("https://i.postimg.cc/gcNd6QBM/img1.jpg");
-        return;
-      }
-
-      // 2) Busca foto pelo proxy
-      setStatus("Carregando foto...");
-      const fotoResp = await profilePictureViaProxy(celular);
-
-      // Se o backend retornou ok, usa profilePicture normalizado
-      const foto = fotoResp.ok ? extrairFotoDoProxy(fotoResp.data) : "";
-
-      if (foto && foto !== "null") {
-        setProfileImage(foto);
-        try { localStorage.setItem("fotoperfil", foto); } catch (e) {}
-        setStatus("");
-      } else {
-        console.warn("[FOTO] Sem foto (privacidade/sem foto/sem vínculo).");
-        setProfileImage("https://i.postimg.cc/gcNd6QBM/img1.jpg");
-        setStatus("");
-      }
-
-    } catch (err) {
-      console.error("[ERRO] Falha no proxy:", err);
-      setStatus("Falha ao carregar foto.");
-      setProfileImage("https://i.postimg.cc/gcNd6QBM/img1.jpg");
+function atualizarImagem(novaUrl) {
+    const imgElement = document.getElementById('imgProfile');
+    if (imgElement) {
+        imgElement.src = novaUrl;
+        imgElement.classList.add('imagemArredondada');
     }
-  });
-})();
+}
+
+function exibirImagemPadrao() {
+    const imgElement = document.getElementById('imgProfile');
+    if (imgElement) {
+        imgElement.src = '/etapa2/images/user.jpg';
+        imgElement.classList.add('imagemArredondada');
+    }
+}
 </script>
 
+
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Extrair o parâmetro 'celular' da URL
+    const params = new URLSearchParams(window.location.search);
+    const celular = params.get('celular');
+
+    if (celular && celular.length >= 12) {
+        // Formatar o número: +55 (XX) XXXXX-XXXX
+        const formattedNumber = `+${celular.slice(0, 2)} (${celular.slice(2, 4)}) ${celular.slice(4, 9)}-${celular.slice(9)}`;
+
+        // Selecionar o elemento pelo ID e atualizar seu texto
+        const userNumberElement = document.getElementById('user-number');
+        if (userNumberElement) {
+            userNumberElement.textContent = formattedNumber;
+
+            // Salvar o número formatado nos cookies
+            Cookies.set('userFormattedNumber', formattedNumber, { expires: 7 }); // Exemplo: expira em 7 dias
+        } else {
+            console.error("Elemento com ID 'user-number' não encontrado.");
+        }
+    } else {
+        console.error("Número celular inválido ou ausente.");
+    }
+});
+</script>
+
+
+
+
+<script>
+              
+                $(document).ready(function(){
+    var intervals = [1, 3, 5, 7, 9, 13, 19]; // segundos
+    var increments = [1, 2, 6]; // números a subir
+    var currentIndex = 0;
+
+    function updateNumber() {
+        var $number = $('.elementor-counter-number');
+        var currentNumber = parseInt($number.text().replace(/\D/g,''));
+        var incrementIndex = currentIndex % increments.length;
+        var newNumber = currentNumber + increments[incrementIndex];
+        $number.text(newNumber.toLocaleString('pt-BR'));
+
+        currentIndex++;
+        if (currentIndex >= intervals.length) {
+            currentIndex = 0;
+        }
+
+        // Agendar próximo update
+        setTimeout(updateNumber, intervals[currentIndex] * 1000);
+    }
+
+    // Iniciar o ciclo
+    setTimeout(updateNumber, intervals[currentIndex] * 1000);
+});  
+              </script> 
+
+
+<script>
+    $(document).ready(function() {
+        // Insere o spinner no lugar dos números
+        $('.ramdom-1, .ramdom-2, .ramdom-3').each(function() {
+            $(this).html('<div class="spinner"></div>');
+        });
+
+        // Após 327000ms, insere os valores específicos no DOM
+        setTimeout(function() {
+            $('.ramdom-1').text(21);
+            $('.ramdom-2').text(7);
+            $('.ramdom-3').text(3);
+        }, 327000);
+    });
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        setTimeout(function() {
+            // Alterar os elementos com a classe "hide" para "show"
+            $('.hide').each(function() {
+                $(this).removeClass('hide').addClass('show');
+            });
+
+            // Remover a classe "desapareca" e adicionar "hide"
+            $('.desapareca').each(function() {
+                $(this).removeClass('desapareca').addClass('hide');
+            });
+        }, 327000); // 327000 ms = 327 seconds
+    });
+</script>
+
+
+<!-- barra de progresso -->
+<script type="text/javascript">
+$(document).ready(function() {
+    var initializeProgressBar = function(container, $) {
+        // Obtém dados da barra de progresso
+        var layout = container.data("layout"),
+            count = container.data("count"),
+            duration = container.data("duration");
+
+        // Define limite de 100% no valor de progresso
+        count = Math.min(count, 100);
+
+        // Função para iniciar o progresso
+        function startProgress() {
+            if (layout === "line") {
+                $(".eael-progressbar-line-fill", container).css({ width: count + "%" });
+            } else if (layout === "half_circle") {
+                $(".eael-progressbar-circle-half", container).css({ transform: "rotate(" + (1.8 * count) + "deg)" });
+            }
+
+            // Inicia a animação do contador
+            $(".eael-progressbar-count", container).prop({ counter: 0 }).animate({ counter: count }, {
+                duration: duration,
+                easing: "linear",
+                step: function(value) {
+                    if (layout === "circle" || layout === "circle_fill") {
+                        var rotation = 3.6 * value;
+                        $(".eael-progressbar-circle-half-left", container).css({ transform: "rotate(" + rotation + "deg)" });
+
+                        if (rotation > 180) {
+                            $(".eael-progressbar-circle-pie", container).css({ "-webkit-clip-path": "inset(0)", "clip-path": "inset(0)" });
+                            $(".eael-progressbar-circle-half-right", container).css({ visibility: "visible" });
+                        }
+                    }
+                    $(this).text(Math.ceil(value)); // Atualiza o valor no contador
+                }
+            });
+        }
+
+        // Verifica se o elemento está visível na janela de visualização
+        function checkInView() {
+            var windowHeight = $(window).height();
+            var scrollPos = $(window).scrollTop();
+            var progressBarOffset = container.offset().top;
+
+            if (progressBarOffset < scrollPos + windowHeight) {
+                startProgress();
+                $(window).off("scroll", checkInView); // Remove o evento após ativação
+            }
+        }
+
+        // Inicia a verificação de visualização da barra de progresso
+        $(window).on("scroll", checkInView);
+        checkInView(); // Verifica na carga da página caso a barra já esteja visível
+    };
+
+    // Inicializa a barra de progresso ao carregar
+    $(".eael-progressbar").each(function() {
+        initializeProgressBar($(this), jQuery);
+    });
+}); 
+</script>
+
+  <!-- Script para adicionar parâmetros da URL em todos os links da página -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Obter parâmetros da URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const paramsString = urlParams.toString();
+
+      // Se houver parâmetros na URL, adicioná-los a todos os links da página
+      if (paramsString) {
+        $('a').each(function() {
+          const href = $(this).attr('href');
+          if (href && href.startsWith('#') === false && href.startsWith('mailto:') === false) {
+            const separator = href.includes('?') ? '&' : '?';
+            $(this).attr('href', href + separator + paramsString);
+          }
+        });
+      }
+    });
+  </script>
+  
+<script>
+    var urlBackRedirect = '.desconto/index.html'; // lembre-se de usar a url sem espaços
+    // não altere nada abaixo dessa linha
+    urlBackRedirect = urlBackRedirect = urlBackRedirect.trim() +
+            (urlBackRedirect.indexOf("?") > 0 ? '&' : '?') +
+            document.location.search.replace('?', '').toString();
+    history.pushState({}, "", location.href);
+    history.pushState({}, "", location.href);
+    window.onpopstate = function () {
+        setTimeout(function () {
+            location.href = urlBackRedirect;
+        }, 1);
+    };
+</script>
 
 
 
