@@ -561,20 +561,20 @@ $(".descounttime").html(value);
 
 }
                   </style>
+
 <script>
 /* ============================================================
-   ETAPA ANTERIOR – JS FINAL (SEM PROFILE)
-   - Normaliza telefone (sempre 55 + DDD + número quando possível)
-   - NÃO chama backend / NÃO busca foto aqui
-   - Fluxo visual intacto (mensagens + progresso)
-   - Redireciona SOMENTE com ?celular=
-   - Mantém UTMs
+   ETAPA ANTERIOR – JS FINAL (COM +55 NA URL)
+   - Normaliza telefone (interno: só dígitos; se 11 dígitos -> prefixa 55)
+   - Redireciona para etapa2 com celular = +55... (ex: +5527997661453)
+   - Mantém mensagens + barra de progresso
+   - Mantém captura/repasse de UTMs (utm_source, utm_campaign, ...)
    ============================================================ */
 
 jQuery(function ($) {
   var userLocation = "sua região"; // fallback
 
-  // Busca localização (opcional)
+  // Busca localização (opcional). Se falhar, segue com fallback.
   $.get("https://ipinfo.io/json", function (response) {
     if (response && response.city) userLocation = response.city;
   }, "json");
@@ -586,7 +586,7 @@ jQuery(function ($) {
     try { return decodeURIComponent(results[1]); } catch (e) { return results[1]; }
   }
 
-  // Captura UTMs
+  // Captura parâmetros desejados
   var parametros = ["utm_source", "utm_campaign", "utm_medium", "utm_content", "src", "sck", "par"];
   var parametrosDaURL = {};
   parametros.forEach(function (param) {
@@ -599,10 +599,11 @@ jQuery(function ($) {
     return String(v || "").replace(/\D/g, "");
   }
 
+  // Retorna SOMENTE dígitos. Se vier 11 dígitos, prefixa 55.
   function normalizarTelefoneBR(raw) {
     var n = onlyDigits(raw);
     if (n.length === 11) n = "55" + n;
-    return n;
+    return n; // ex: 5527997661453
   }
 
   /* ---------- Clique botão principal ---------- */
@@ -624,16 +625,15 @@ jQuery(function ($) {
   function iniciarProcura(usernameRaw) {
     var telefone = normalizarTelefoneBR(usernameRaw);
 
+    // validação mínima (não inventa dígitos)
     if (!telefone || telefone.length < 11) {
       alert("Preencha o campo com um número válido!");
       $(".button-hack").removeClass("disable_a_href");
       return;
     }
 
-    // Guarda para a próxima etapa
-    try {
-      localStorage.setItem("userNormalizedNumber", telefone);
-    } catch (e) {}
+    // salva para uso posterior (opcional)
+    try { localStorage.setItem("userNormalizedNumber", telefone); } catch (e) {}
 
     $("#progress-container").show();
 
@@ -652,11 +652,11 @@ jQuery(function ($) {
 
     function nextStep() {
       if (i >= messages.length) {
+        // REDIRECT COM +55 NA URL
+        var celularComPlus = "+" + telefone; // ex: +5527997661453
+        var redirectUrl = `./etapa2/index.html?celular=${encodeURIComponent(celularComPlus)}`;
 
-        // URL FINAL (SEM profile)
-        var redirectUrl = `./etapa2/index.html?celular=${encodeURIComponent(telefone)}`;
-
-        // Anexa UTMs
+        // Anexa UTMs e outros params
         Object.keys(parametrosDaURL).forEach(function (key) {
           redirectUrl += `&${encodeURIComponent(key)}=${encodeURIComponent(parametrosDaURL[key])}`;
         });
