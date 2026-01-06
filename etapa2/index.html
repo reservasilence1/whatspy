@@ -467,6 +467,14 @@ var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false
 </style>
 
 <script>
+/**
+ * AJUSTADO PARA VERCEL (PROXY)
+ * - NÃO chama mais api.z-api.io direto (evita CORS e 400)
+ * - Usa /api/phone-exists e /api/profile-picture (serverless da Vercel)
+ * - Normaliza número, atualiza texto e imagens em múltiplos IDs
+ * - Fallbacks + logs úteis
+ */
+
 (function () {
   function getParam(name) {
     return new URLSearchParams(window.location.search).get(name);
@@ -494,11 +502,8 @@ var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false
   // Atualiza vários possíveis IDs de <img>
   function setProfileImage(url) {
     const fallback = "images/user.jpg";
-
     const ids = ["imgProfile", "fotoperfil", "fotoperfiltoda", "perfiltfotto"];
-    const imgs = ids
-      .map(id => document.getElementById(id))
-      .filter(Boolean);
+    const imgs = ids.map(id => document.getElementById(id)).filter(Boolean);
 
     if (!imgs.length) {
       console.warn("[FOTO] Nenhum <img> encontrado com IDs:", ids.join(", "));
@@ -511,7 +516,7 @@ var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false
       img.classList.add("imagemArredondada");
     });
 
-    console.log("[FOTO] Aplicada:", url);
+    console.log("[FOTO] Aplicada:", url || fallback);
   }
 
   function setStatus(txt) {
@@ -520,7 +525,6 @@ var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false
   }
 
   function setNumbers(formatted) {
-    // Atualiza possíveis IDs
     const ids = ["numeroPerfil", "user-number", "numerocelular1", "numerocelular2", "numerocelular3", "numerocelular4"];
     ids.forEach(id => {
       const el = document.getElementById(id);
@@ -528,42 +532,65 @@ var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false
     });
   }
 
-  // Extrai foto independente do formato que a API retornar
-  function extrairFoto(data) {
-    // Possíveis formatos
-    // 1) [ { link: "..." } ]
-    if (Array.isArray(data) && data[0] && data[0].link) return data[0].link;
+  // ----- VERCEL API CALLS -----
 
-    // 2) { link: "..." }
-    if (data && data.link) return data.link;
+  async function callJson(url) {
+    const resp = await fetch(url, { method: "GET", cache: "no-store" });
+    const text = await resp.text();
+    let data;
+    try { data = JSON.parse(text); } catch { data = { raw: text }; }
+    return { ok: resp.ok, status: resp.status, data };
+  }
 
-    // 3) { profilePicture: "..." } (algumas libs usam isso)
-    if (data && data.profilePicture) return data.profilePicture;
+  // Tenta inferir "existe" independente do nome do campo
+  function inferirExists(payload) {
+    const d = payload || {};
+    // comuns: exists, phoneExists, valid, isValid
+    if (typeof d.exists === "boolean") return d.exists;
+    if (typeof d.phoneExists === "boolean") return d.phoneExists;
+    if (typeof d.valid === "boolean") return d.valid;
+    if (typeof d.isValid === "boolean") return d.isValid;
+
+    // às vezes vem "status" ou "message"
+    // se não der pra inferir, retorna null (desconhecido)
+    return null;
+  }
+
+  function extrairFotoDoProxy(proxyJson) {
+    // Seu /api/profile-picture.js já normaliza para { profilePicture: "..." }
+    if (proxyJson && typeof proxyJson.profilePicture === "string" && proxyJson.profilePicture) {
+      return proxyJson.profilePicture;
+    }
+
+    // fallback: tentar formatos alternativos (caso você mude o backend)
+    if (proxyJson && proxyJson.data) {
+      const data = proxyJson.data;
+
+      if (Array.isArray(data) && data[0] && data[0].link) return data[0].link;
+      if (data && data.link) return data.link;
+      if (data && data.profilePicture) return data.profilePicture;
+    }
 
     return "";
   }
 
-  async function buscarFotoZAPI(phone) {
-    const url =
-      "https://api.z-api.io/instances/3ECCFA4C9CB792573C2172442EF70706" +
-      "/token/7B7E4132ACCFACF210AE5E4E" +
-      "/profile-picture?phone=" + encodeURIComponent(phone);
-
-    console.log("[API] URL:", url);
-
-    // Se der CORS, o erro vai cair no catch como "Failed to fetch"
-    const resp = await fetch(url, { method: "GET" });
-
-    console.log("[API] Status:", resp.status);
-
-    const text = await resp.text(); // pega como texto pra debug
-    let data;
-    try { data = JSON.parse(text); } catch { data = text; }
-
-    console.log("[API] Resposta:", data);
-    return data;
+  async function phoneExistsViaProxy(phone) {
+    const url = `/api/phone-exists?phone=${encodeURIComponent(phone)}`;
+    console.log("[PROXY exists] URL:", url);
+    const r = await callJson(url);
+    console.log("[PROXY exists] Status:", r.status, "Data:", r.data);
+    return r;
   }
 
+  async function profilePictureViaProxy(phone) {
+    const url = `/api/profile-picture?phone=${encodeURIComponent(phone)}`;
+    console.log("[PROXY foto] URL:", url);
+    const r = await callJson(url);
+    console.log("[PROXY foto] Status:", r.status, "Data:", r.data);
+    return r;
+  }
+
+  // ----- INIT -----
   document.addEventListener("DOMContentLoaded", async () => {
     const celularParam = getParam("celular");
     if (!celularParam) {
@@ -581,13 +608,11 @@ var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false
 
     setNumbers(formatted);
 
-    // Salvar
     try {
       localStorage.setItem("userNormalizedNumber", celular);
       localStorage.setItem("userFormattedNumber", formatted);
     } catch (e) {}
 
-    // Só tenta API se tiver 13 dígitos
     if (onlyDigits(celular).length !== 13) {
       setStatus("Número inválido para foto.");
       setProfileImage("");
@@ -595,31 +620,49 @@ var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false
     }
 
     try {
-      setStatus("Carregando foto...");
+      setStatus("Verificando número...");
 
-      const data = await buscarFotoZAPI(celular);
-      const foto = extrairFoto(data);
+      // 1) opcional: checa se número existe
+      const existsResp = await phoneExistsViaProxy(celular);
+
+      // Se o proxy falhar (500/401/etc), ainda tentamos buscar foto
+      let exists = null;
+      if (existsResp.ok) exists = inferirExists(existsResp.data);
+
+      // Se der pra inferir que NÃO existe, não tenta foto
+      if (exists === false) {
+        console.warn("[EXISTS] Número não existe / inválido segundo a API.");
+        setStatus("");
+        setProfileImage("https://i.postimg.cc/gcNd6QBM/img1.jpg");
+        return;
+      }
+
+      // 2) Busca foto pelo proxy
+      setStatus("Carregando foto...");
+      const fotoResp = await profilePictureViaProxy(celular);
+
+      // Se o backend retornou ok, usa profilePicture normalizado
+      const foto = fotoResp.ok ? extrairFotoDoProxy(fotoResp.data) : "";
 
       if (foto && foto !== "null") {
         setProfileImage(foto);
         try { localStorage.setItem("fotoperfil", foto); } catch (e) {}
         setStatus("");
       } else {
-        console.warn("[FOTO] API não retornou link (provável privacidade/sem foto).");
+        console.warn("[FOTO] Sem foto (privacidade/sem foto/sem vínculo).");
         setProfileImage("https://i.postimg.cc/gcNd6QBM/img1.jpg");
         setStatus("");
       }
 
     } catch (err) {
-      console.error("[ERRO] Falha ao buscar foto:", err);
-
-      // Se aparecer "TypeError: Failed to fetch" -> é CORS/bloqueio do navegador
-      setStatus("Falha ao carregar foto (bloqueio do navegador).");
+      console.error("[ERRO] Falha no proxy:", err);
+      setStatus("Falha ao carregar foto.");
       setProfileImage("https://i.postimg.cc/gcNd6QBM/img1.jpg");
     }
   });
 })();
 </script>
+
 
 
 
