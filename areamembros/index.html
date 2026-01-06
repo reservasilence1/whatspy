@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head><meta http-equiv="content-type" content="text/html;charset=UTF-8">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <!-- Bootstrap CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: url('images/bg1.avif') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+        .login-container {
+            background: #0000007a;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+            border-radius: 12px;
+            width: 100%;
+        }
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+            .poppins-medium {
+                font-family: "Poppins", serif;
+                font-weight: 500;
+                font-style: normal;
+        }
+
+
+        .monospace {
+            font-family: monospace;
+        }
+
+        .title-large {
+            font-size: 38px;
+        }
+
+        .title-medium {
+            font-size: 20px;
+        }
+
+        .p-14 {
+            font-size: 14px;
+        }
+
+        .p-12 {
+            font-size: 12px;
+        }
+        
+        .font-weight-700 {
+            font-weight: 700;
+        }
+
+        .text-grey{
+            color: grey;
+            text-decoration: none;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* form */
+
+        .form-control {
+            background-color: #e9ecef0f;
+            border: 1px solid #ffffff33;
+            color: white;
+        }
+
+        .form-control:focus {
+            color: black !important;
+        }
+
+        /*  btn */
+
+        .btn-dark {
+            background: white;
+            color: black;
+        }
+
+    </style>
+    </head>
+    <body>
+        
+          <script>
+  window.pixelId = "68158999029bf19628c6553c";
+  var a = document.createElement("script");
+  a.setAttribute("async", "");
+  a.setAttribute("defer", "");
+  a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+  document.head.appendChild(a);
+</script>
+  <script
+  src="https://cdn.utmify.com.br/scripts/utms/latest.js"
+  data-utmify-prevent-xcod-sck
+  data-utmify-prevent-subids
+  async
+  defer
+></script>
+        
+
+        <div class="container mb-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="login-container text-white">
+                        <h1 class="title-large monospace font-weight-700">Bem Vindo</h1>
+                        <p class="p-14">Por favor, digite seu email utilizado na compra</p>
+                        <form>
+                            <div class="mt-4 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" placeholder="Seu email">
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="rememberMe">
+                                <label class="form-check-label p-14" for="rememberMe">Lembrar-me</label>
+                            </div>
+                            <button type="submit" class="btn btn-dark w-100 mb-3">Entrar</button>
+                        </form>
+                        
+                        <p class="text-center text-light mt-3 p-12">Precisa de ajuda?<a href="./suporte/index.html" target="_blank"> Clique aqui</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer p-12 text-grey">
+            <p>Ferramenta Atualizada:<br> <b class="descounttime">-</b></p>
+            <p style="font-size: 13px;">CNPJ: 52.743.235/0005-11<br>Termos de Uso<br><a style="color: blue;" href="./politicas/index.html">Politicas de privacidade</a></p>
+            <p>� 2024 Todos os direitos reservados.</p>
+        </div>
+
+        <!-- VISELL: COLOEQUE AQUI O SEU SCRIPT DE PIXEL -->
+        
+  
+
+        <script src="js/jquery-3.6.0.min.js" type="text/javascript"></script>
+        <script src="js/login.js" type="text/javascript"></script>
+        <script language="javascript" type="text/javascript">
+            var getdayNames = new Array("Domingo", "Segunda-Feira", "Terça-Feira", "Quarta-Feira","Quinta-Feira", "Sexta-Feira", "Sábado");
+            var getdayMonth = new Array("Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho","Agosto", "Setembro", "Outubro", "Novembro", "Dezembro");
+            var getNow = new Date();
+            var dayOfTheWeek = getNow.getDay();
+            getNow.setTime(getNow.getTime() - 0 * 24 * 60 * 60 * 1000);
+            var value = getdayNames[(getNow.getDay())] + ", " + getNow.getDate() + " de " + getdayMonth[(getNow.getMonth())] + " " + " de " + getNow.getFullYear();
+            $(".descounttime").html(value);
+        </script>
+
+    </body>
+</html>
