@@ -467,21 +467,17 @@ var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false
 </style>
 
 <script>
-/**
- * JS consolidado (foto + número) + seus scripts existentes
- * - Normaliza o celular (aceita 11 dígitos ou 55+DDD+numero)
- * - Busca foto na Z-API (/profile-picture) via GET
- * - Atualiza #imgProfile e salva localStorage fotoperfil
- * - Atualiza #numeroPerfil e #user-number (se existirem)
- * - Mantém TODOS os seus scripts jQuery/Elementor/links/backredirect
- *
- * Requisitos:
- * - jQuery carregado (você já usa)
- * - Se quiser Cookies.set funcionar, carregue js-cookie (Cookies global)
- */
+/* ============================================================
+   FOTO DE PERFIL + NÚMERO (Z-API) – VERSÃO FINAL
+   Compatível com:
+   ?celular=5524992312847
+   Retorno da Z-API: [ { link: "https://..." } ]
+   ============================================================ */
 
 (function () {
-  // Helpers
+
+  /* ================= HELPERS ================= */
+
   function getParam(name) {
     return new URLSearchParams(window.location.search).get(name);
   }
@@ -490,34 +486,28 @@ var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false
     return String(v || "").replace(/\D/g, "");
   }
 
-  // Aceita:
-  // - 11999999999 (11 dígitos) -> vira 5511999999999
-  // - 5511999999999 (13 dígitos) -> mantém
-  // - +55 (11) 99999-9999 -> vira 5511999999999
+  // Normaliza para padrão internacional (55 + DDD + 9XXXX + XXXX)
   function normalizarCelular(celular) {
     let n = onlyDigits(celular);
-
-    // Se vier com 10 dígitos (sem o 9), você pode decidir como tratar.
-    // Aqui, só segue sem inventar número.
     if (n.length === 11) n = "55" + n;
-
-    return n; // esperado: 13 dígitos (55 + DDD + 9xxxx + xxxx)
+    return n;
   }
 
-  function formatarCelularBR(celularNormalizado) {
-    const n = onlyDigits(celularNormalizado);
+  function formatarCelularBR(celular) {
+    const n = onlyDigits(celular);
 
-    // Se estiver no formato 55DD9XXXXYYYY (13 dígitos)
+    // 55 + DDD + 9XXXX + XXXX
     const m13 = n.match(/^55(\d{2})(\d{5})(\d{4})$/);
     if (m13) return `+55 (${m13[1]}) ${m13[2]}-${m13[3]}`;
 
-    // Se estiver no formato DD9XXXXYYYY (11 dígitos)
+    // DDD + 9XXXX + XXXX
     const m11 = n.match(/^(\d{2})(\d{5})(\d{4})$/);
     if (m11) return `(${m11[1]}) ${m11[2]}-${m11[3]}`;
 
-    // Fallback: devolve o que tiver
     return n;
   }
+
+  /* ================= IMAGEM ================= */
 
   function atualizarImagem(url) {
     const img = document.getElementById("imgProfile");
@@ -535,237 +525,81 @@ var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false
     }
   }
 
-  function atualizarTexto(id, txt) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = txt;
-  }
+  /* ================= API Z-API ================= */
 
-  async function buscarFotoPerfilZAPI(celularNormalizado) {
+  async function buscarFotoPerfil(celularNormalizado) {
     const url =
       "https://api.z-api.io/instances/3ECCFA4C9CB792573C2172442EF70706" +
       "/token/7B7E4132ACCFACF210AE5E4E" +
-      "/profile-picture?phone=" +
-      encodeURIComponent(celularNormalizado);
+      "/profile-picture?phone=" + encodeURIComponent(celularNormalizado);
 
     const response = await fetch(url, { method: "GET" });
-    if (!response.ok) throw new Error("Erro HTTP " + response.status);
+    if (!response.ok) throw new Error("HTTP " + response.status);
+
     return response.json();
   }
 
-  // DOM Ready (vanilla) – foto + número
+  /* ================= INIT ================= */
+
   document.addEventListener("DOMContentLoaded", async function () {
     const celularParam = getParam("celular");
-    const statusAnalise = document.getElementById("statusAnalise");
+    const statusEl = document.getElementById("statusAnalise");
 
     if (!celularParam) {
-      if (statusAnalise) statusAnalise.textContent = "Número celular ausente.";
+      if (statusEl) statusEl.textContent = "Número não encontrado.";
+      exibirImagemPadrao();
       return;
     }
 
     const celularNormalizado = normalizarCelular(celularParam);
-
-    // Se não ficou com 13 dígitos (55 + 11 dígitos), ainda assim mostramos algo,
-    // mas não chamamos a API para evitar request inútil.
     const celularFormatado = formatarCelularBR(celularNormalizado);
 
-    // Atualiza número nos possíveis IDs (se existirem)
-    atualizarTexto("numeroPerfil", celularFormatado);
-    atualizarTexto("user-number", celularFormatado);
-
-    // Cookies (se js-cookie estiver carregado)
-    if (typeof Cookies !== "undefined" && Cookies && typeof Cookies.set === "function") {
-      Cookies.set("userFormattedNumber", celularFormatado, { expires: 7 });
-      Cookies.set("userNormalizedNumber", celularNormalizado, { expires: 7 });
-    }
+    // Atualiza número nos elementos disponíveis
+    const idsNumero = ["numeroPerfil", "user-number"];
+    idsNumero.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = celularFormatado;
+    });
 
     // Salva localStorage
     try {
-      localStorage.setItem("userFormattedNumber", celularFormatado);
       localStorage.setItem("userNormalizedNumber", celularNormalizado);
+      localStorage.setItem("userFormattedNumber", celularFormatado);
     } catch (e) {}
 
-    // Chamada da foto só se parecer válido
+    // Validação mínima para API
     if (onlyDigits(celularNormalizado).length !== 13) {
-      if (statusAnalise) statusAnalise.textContent = "Número inválido para buscar foto.";
+      if (statusEl) statusEl.textContent = "Número inválido.";
       exibirImagemPadrao();
       return;
     }
 
     try {
-      if (statusAnalise) statusAnalise.textContent = "Buscando foto...";
-      const data = await buscarFotoPerfilZAPI(celularNormalizado);
+      if (statusEl) statusEl.textContent = "Carregando foto...";
 
-      const fotoPerfil = data.profilePicture || "https://i.postimg.cc/gcNd6QBM/img1.jpg";
-      atualizarImagem(fotoPerfil);
+      const data = await buscarFotoPerfil(celularNormalizado);
 
-      try {
-        localStorage.setItem("fotoperfil", fotoPerfil);
-      } catch (e) {}
+      // Z-API retorna: [ { link: "https://..." } ]
+      const foto =
+        Array.isArray(data) && data[0] && data[0].link
+          ? data[0].link
+          : "https://i.postimg.cc/gcNd6QBM/img1.jpg";
 
-      if (statusAnalise) statusAnalise.textContent = "";
+      atualizarImagem(foto);
+      localStorage.setItem("fotoperfil", foto);
 
-    } catch (error) {
-      console.error("Erro ao buscar foto:", error);
-      if (statusAnalise) statusAnalise.textContent = "Erro ao buscar foto";
+      if (statusEl) statusEl.textContent = "";
+
+    } catch (err) {
+      console.error("Erro ao buscar foto:", err);
+      if (statusEl) statusEl.textContent = "Erro ao carregar foto";
       exibirImagemPadrao();
     }
   });
 
-  // DOM Ready (jQuery) – mantém seus comportamentos
-  if (typeof jQuery !== "undefined") {
-    jQuery(function ($) {
-      // Seu contador (elementor-counter-number)
-      var intervals = [1, 3, 5, 7, 9, 13, 19]; // segundos
-      var increments = [1, 2, 6]; // números a subir
-      var currentIndex = 0;
-
-      function updateNumber() {
-        var $number = $(".elementor-counter-number");
-        if (!$number.length) return;
-
-        var currentNumber = parseInt(String($number.text()).replace(/\D/g, "")) || 0;
-        var incrementIndex = currentIndex % increments.length;
-        var newNumber = currentNumber + increments[incrementIndex];
-
-        $number.text(newNumber.toLocaleString("pt-BR"));
-
-        currentIndex++;
-        if (currentIndex >= intervals.length) currentIndex = 0;
-
-        setTimeout(updateNumber, intervals[currentIndex] * 1000);
-      }
-      setTimeout(updateNumber, intervals[currentIndex] * 1000);
-
-      // Spinner -> números após 327s
-      $(".ramdom-1, .ramdom-2, .ramdom-3").each(function () {
-        $(this).html('<div class="spinner"></div>');
-      });
-
-      setTimeout(function () {
-        $(".ramdom-1").text(21);
-        $(".ramdom-2").text(7);
-        $(".ramdom-3").text(3);
-      }, 327000);
-
-      // Troca classes hide/show após 327s
-      setTimeout(function () {
-        $(".hide").each(function () {
-          $(this).removeClass("hide").addClass("show");
-        });
-
-        $(".desapareca").each(function () {
-          $(this).removeClass("desapareca").addClass("hide");
-        });
-      }, 327000);
-
-      // Progressbar EAEL (mantido)
-      var initializeProgressBar = function (container, $) {
-        var layout = container.data("layout"),
-          count = container.data("count"),
-          duration = container.data("duration");
-
-        count = Math.min(count, 100);
-
-        function startProgress() {
-          if (layout === "line") {
-            $(".eael-progressbar-line-fill", container).css({ width: count + "%" });
-          } else if (layout === "half_circle") {
-            $(".eael-progressbar-circle-half", container).css({
-              transform: "rotate(" + 1.8 * count + "deg)",
-            });
-          }
-
-          $(".eael-progressbar-count", container)
-            .prop({ counter: 0 })
-            .animate(
-              { counter: count },
-              {
-                duration: duration,
-                easing: "linear",
-                step: function (value) {
-                  if (layout === "circle" || layout === "circle_fill") {
-                    var rotation = 3.6 * value;
-                    $(".eael-progressbar-circle-half-left", container).css({
-                      transform: "rotate(" + rotation + "deg)",
-                    });
-
-                    if (rotation > 180) {
-                      $(".eael-progressbar-circle-pie", container).css({
-                        "-webkit-clip-path": "inset(0)",
-                        "clip-path": "inset(0)",
-                      });
-                      $(".eael-progressbar-circle-half-right", container).css({
-                        visibility: "visible",
-                      });
-                    }
-                  }
-                  $(this).text(Math.ceil(value));
-                },
-              }
-            );
-        }
-
-        function checkInView() {
-          var windowHeight = $(window).height();
-          var scrollPos = $(window).scrollTop();
-          var progressBarOffset = container.offset().top;
-
-          if (progressBarOffset < scrollPos + windowHeight) {
-            startProgress();
-            $(window).off("scroll", checkInView);
-          }
-        }
-
-        $(window).on("scroll", checkInView);
-        checkInView();
-      };
-
-      $(".eael-progressbar").each(function () {
-        initializeProgressBar($(this), jQuery);
-      });
-
-      // Adiciona parâmetros da URL em todos os links
-      $(function () {
-        const urlParams = new URLSearchParams(window.location.search);
-        const paramsString = urlParams.toString();
-
-        if (paramsString) {
-          $("a").each(function () {
-            const href = $(this).attr("href");
-            if (
-              href &&
-              !href.startsWith("#") &&
-              !href.startsWith("mailto:") &&
-              !href.startsWith("javascript:")
-            ) {
-              const separator = href.includes("?") ? "&" : "?";
-              $(this).attr("href", href + separator + paramsString);
-            }
-          });
-        }
-      });
-
-      // Back redirect
-      (function () {
-        var urlBackRedirect = "./whatspy27/index.html";
-        urlBackRedirect =
-          urlBackRedirect.trim() +
-          (urlBackRedirect.indexOf("?") > 0 ? "&" : "?") +
-          document.location.search.replace("?", "").toString();
-
-        history.pushState({}, "", location.href);
-        history.pushState({}, "", location.href);
-
-        window.onpopstate = function () {
-          setTimeout(function () {
-            location.href = urlBackRedirect;
-          }, 1);
-        };
-      })();
-    });
-  }
 })();
 </script>
+
 
 
 
