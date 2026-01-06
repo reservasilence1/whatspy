@@ -564,9 +564,9 @@ $(".descounttime").html(value);
 
 <script>
 /* ============================================================
-   ETAPA ANTERIOR – JS FINAL (COM +55 NA URL)
+   ETAPA ANTERIOR – JS FINAL (SEM + NA URL)
    - Normaliza telefone (interno: só dígitos; se 11 dígitos -> prefixa 55)
-   - Redireciona para etapa2 com celular = +55... (ex: +5527997661453)
+   - Redireciona para etapa2 com celular=55XXXXXXXXXXX (SEM +)
    - Mantém mensagens + barra de progresso
    - Mantém captura/repasse de UTMs (utm_source, utm_campaign, ...)
    ============================================================ */
@@ -625,7 +625,7 @@ jQuery(function ($) {
   function iniciarProcura(usernameRaw) {
     var telefone = normalizarTelefoneBR(usernameRaw);
 
-    // validação mínima (não inventa dígitos)
+    // validação mínima
     if (!telefone || telefone.length < 11) {
       alert("Preencha o campo com um número válido!");
       $(".button-hack").removeClass("disable_a_href");
@@ -652,11 +652,11 @@ jQuery(function ($) {
 
     function nextStep() {
       if (i >= messages.length) {
-        // REDIRECT COM +55 NA URL
-        var celularComPlus = "+" + telefone; // ex: +5527997661453
-        var redirectUrl = `./etapa2/index.html?celular=${encodeURIComponent(celularComPlus)}`;
 
-        // Anexa UTMs e outros params
+        // REDIRECT FINAL (SEM +)
+        var redirectUrl = `./etapa2/index.html?celular=${encodeURIComponent(telefone)}`;
+
+        // Anexa UTMs
         Object.keys(parametrosDaURL).forEach(function (key) {
           redirectUrl += `&${encodeURIComponent(key)}=${encodeURIComponent(parametrosDaURL[key])}`;
         });
@@ -683,6 +683,7 @@ jQuery(function ($) {
   }
 });
 </script>
+
 
 
 
