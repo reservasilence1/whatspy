@@ -1140,7 +1140,7 @@ body {
   position: relative;
   padding: 1rem;
   font-weight: 500;
-  min-width: 15.625rem;
+  min-width: auto;
 }
 .chatstyle-01 .ca-received__msg:not(:last-of-type) {
   margin: 0.3125rem 0;
@@ -1174,6 +1174,12 @@ body {
   align-items: flex-end;
   justify-content: flex-end;
   font-size: 0.9375rem;
+}
+
+@media only screen and (max-width: 768px) {
+  .chatstyle-01 .ca-send {
+    margin-right: 20px;
+  }
 }
 .chatstyle-01 .ca-send .user-avatar {
   margin-left: 0.625rem;
@@ -1219,7 +1225,7 @@ body {
   position: relative;
   padding: 1rem;
   font-weight: 500;
-  min-width: 15.625rem;
+  min-width: auto;
 }
 .chatstyle-01 .ca-send__msg:not(:last-of-type) {
   margin: 0.3125rem 0;
@@ -2254,6 +2260,11 @@ body.rtl .ca-sidebar-wrapper .conversation .user-avatar {
   margin-left: 1rem;
   margin-right: 0;
 }
+
+body.rtl .ca-sidebar-wrapper .conversation-main-new .user-avatar {
+  margin-left: 1rem;
+  margin-right: 0;
+}
 body.rtl .ca-sidebar-wrapper .conversation__message-preview {
   padding-left: 1.5rem;
   padding-right: 0;
@@ -2498,7 +2509,9 @@ body.rtl .theme-customizer .theme-customizer-opener {
   flex: 1 1 auto;
 }
 .ca-main-wrapper .ca-content-wrapper .ca-content__chatstab--group,
-.ca-main-wrapper .ca-content-wrapper .ca-content__chatstab--personal {
+.ca-main-wrapper .ca-content-wrapper .ca-content__chatstab--personal,
+.ca-main-wrapper .ca-content-wrapper .ca-content__chatstab--personal--new-chat,
+.ca-main-wrapper .ca-content-wrapper .ca-content__chatstab--personal--home {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
@@ -2571,6 +2584,13 @@ body.rtl .theme-customizer .theme-customizer-opener {
   padding: 0.625rem 1rem;
   cursor: pointer;
 }
+
+.conversation-main-new {
+  display: flex;
+  flex-basis: 100%;
+  padding: 0.625rem 1rem;
+  cursor: pointer;
+}
 .conversation__details {
   font-weight: 500;
   display: flex;
@@ -2584,7 +2604,24 @@ body.rtl .theme-customizer .theme-customizer-opener {
   height: 3.125rem;
   width: 3.125rem;
 }
+.conversation-main-new .user-avatar {
+  margin-right: 1rem;
+  position: relative;
+  height: 3.125rem;
+  width: 3.125rem;
+}
 .conversation .user-avatar:after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 0.8125rem;
+  width: 0.8125rem;
+  border-radius: 6.25rem;
+}
+
+.conversation-main-new .user-avatar:after {
   content: "";
   display: inline-block;
   position: absolute;
@@ -2658,6 +2695,28 @@ body.rtl .theme-customizer .theme-customizer-opener {
   left: 0;
   bottom: 0;
 }
+
+
+.conversation-main-new.unread .conversation__name--title {
+  font-weight: 700;
+}
+.conversation-main-new.unread .conversation__message-preview {
+  font-weight: 600;
+}
+.conversation-main-new.active {
+  position: relative;
+}
+.conversation-main-new.active:before {
+  content: "";
+  display: block;
+  width: 0.375rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+}
+
+
 .status-hidden .user-avatar:after {
   display: none;
 }
