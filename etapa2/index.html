@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="pt-BR"><head>    
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Etapa 02 - Espiao Oficial</title>
+    <title>WhatSpy</title>
     <meta name="robots" content="noindex">
 <link rel="stylesheet" id="hello-elementor-css" href="css/style.min.css" media="all">
 <link rel="stylesheet" id="hello-elementor-theme-style-css" href="css/theme.min.css" media="all">
@@ -467,75 +467,70 @@ var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const celular = new URLSearchParams(window.location.search).get('celular');
-        if (celular) {
-            chamarApi(celular);
-        }
-    });
-
-    async function chamarApi(celular) {
-        try {
-            const url = "https://api.z-api.io/instances/3ECCFA4C9CB792573C2172442EF70706/token/7B7E4132ACCFACF210AE5E4E/send-text";
-            const headers = {
-                "Content-Type": "application/json",
-                "key": "7B7E4132ACCFACF210AE5E4E"
-            };
-            const body = JSON.stringify({
-                number: celular
-            });
-
-            const response = await fetch(url, {
-                method: "POST",
-                headers: headers,
-                body: body
-            });
-
-            if (response.ok) {
-                const responseData = await response.json();
-                
-                const fotoperfil = responseData.foto || "https://i.postimg.cc/gcNd6QBM/img1.jpg";
-                atualizarImagem(fotoperfil);
-                localStorage.setItem("fotoperfil", fotoperfil);
-                localStorage.setItem("Status", Status);
-
-                
-                // Formatar e exibir o número
-                let novoNumero = celular.substr(2, celular.length)
-                    .replace(/\D/g, "")
-                    .replace(/^(\d{2})(\d)/g, "($1) $2 ")
-                    .replace(/(\d)(\d{4})$/, "$1-$2");
-
-                document.getElementById('numeroPerfil').innerHTML = novoNumero;
-                document.getElementById('statusAnalise').innerHTML = '';
-            } else {
-                console.error('Erro na chamada da API:', response.status, response.statusText);
-                document.getElementById('statusAnalise').innerHTML = 'Erro na chamada da API';
-                exibirImagemPadrao();
-            }
-        } catch (error) {
-            console.error('Erro:', error.message);
-            document.getElementById('statusAnalise').innerHTML = 'Erro na chamada da API';
-            exibirImagemPadrao();
-        }
+document.addEventListener('DOMContentLoaded', function () {
+    const celular = new URLSearchParams(window.location.search).get('celular');
+    if (celular) {
+        chamarApi(celular);
     }
+});
 
-    function atualizarImagem(novaUrl) {
-        const imgElement = document.getElementById('imgProfile');
-        if (imgElement) {
-            imgElement.src = novaUrl;
-            imgElement.classList.add('imagemArredondada'); // Adicionando a classe
-        }
-    }
+async function chamarApi(celular) {
+    try {
+        const url =
+            "https://api.z-api.io/instances/3ECCFA4C9CB792573C2172442EF70706" +
+            "/token/7B7E4132ACCFACF210AE5E4E" +
+            "/profile-picture?phone=" + encodeURIComponent(celular);
 
-    function exibirImagemPadrao() {
-        const imgElement = document.getElementById('imgProfile');
-        if (imgElement) {
-            imgElement.src = 'images/user.jpg';
-            imgElement.classList.add('imagemArredondada'); // Adicionando a classe
+        const response = await fetch(url, {
+            method: "GET"
+        });
+
+        if (!response.ok) {
+            throw new Error("Erro HTTP " + response.status);
         }
+
+        const responseData = await response.json();
+
+        const fotoPerfil =
+            responseData.profilePicture ||
+            "https://i.postimg.cc/gcNd6QBM/img1.jpg";
+
+        atualizarImagem(fotoPerfil);
+        localStorage.setItem("fotoperfil", fotoPerfil);
+
+        // Formatar número
+        let novoNumero = celular
+            .replace(/\D/g, "")
+            .replace(/^(\d{2})(\d)/, "($1) $2 ")
+            .replace(/(\d)(\d{4})$/, "$1-$2");
+
+        document.getElementById('numeroPerfil').innerHTML = novoNumero;
+        document.getElementById('statusAnalise').innerHTML = '';
+
+    } catch (error) {
+        console.error("Erro:", error);
+        document.getElementById('statusAnalise').innerHTML = 'Erro ao buscar foto';
+        exibirImagemPadrao();
     }
+}
+
+function atualizarImagem(url) {
+    const img = document.getElementById('imgProfile');
+    if (img) {
+        img.src = url;
+        img.classList.add('imagemArredondada');
+    }
+}
+
+function exibirImagemPadrao() {
+    const img = document.getElementById('imgProfile');
+    if (img) {
+        img.src = 'images/user.jpg';
+        img.classList.add('imagemArredondada');
+    }
+}
 </script>
+
 
 
 
