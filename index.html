@@ -563,19 +563,18 @@ $(".descounttime").html(value);
                   </style>
 <script>
 /* ============================================================
-   ETAPA ANTERIOR – JS COMPLETO (corrigido)
-   - Remove duplicidade de getParametroDaURL
+   ETAPA ANTERIOR – JS FINAL (SEM PROFILE)
    - Normaliza telefone (sempre 55 + DDD + número quando possível)
-   - Faz o GET do seu endpoint (xxxxxxxxxxx) e só redireciona
-     DEPOIS que a resposta chegar (não vai mais profile=undefined)
-   - Mantém o fluxo de mensagens + barra de progresso
-   - Mantém captura/repasse de UTMs (utm_source, utm_campaign, ...)
+   - NÃO chama backend / NÃO busca foto aqui
+   - Fluxo visual intacto (mensagens + progresso)
+   - Redireciona SOMENTE com ?celular=
+   - Mantém UTMs
    ============================================================ */
 
 jQuery(function ($) {
   var userLocation = "sua região"; // fallback
 
-  // Busca localização (se falhar, segue com fallback)
+  // Busca localização (opcional)
   $.get("https://ipinfo.io/json", function (response) {
     if (response && response.city) userLocation = response.city;
   }, "json");
@@ -587,7 +586,7 @@ jQuery(function ($) {
     try { return decodeURIComponent(results[1]); } catch (e) { return results[1]; }
   }
 
-  // Captura parâmetros desejados
+  // Captura UTMs
   var parametros = ["utm_source", "utm_campaign", "utm_medium", "utm_content", "src", "sck", "par"];
   var parametrosDaURL = {};
   parametros.forEach(function (param) {
@@ -600,72 +599,10 @@ jQuery(function ($) {
     return String(v || "").replace(/\D/g, "");
   }
 
-  // Regras:
-  // - se vier 11 dígitos: prefixa 55
-  // - se vier 13 dígitos: mantém
-  // - se vier diferente: mantém o que tiver (sem inventar)
   function normalizarTelefoneBR(raw) {
     var n = onlyDigits(raw);
     if (n.length === 11) n = "55" + n;
     return n;
-  }
-
-  /* ---------- Endpoint do seu backend (MANTENHA O SEU) ---------- */
-  function montarUrlProfile(telefone) {
-    // IMPORTANTE: substitua pelo seu endpoint real
-    // Ex: https://seu-dominio.com/api/profile?token=xxx&phone=${telefone}
-    return `https://xxxxxxxxxxx&phone=${telefone}`;
-  }
-
-  /* ---------- Busca profile (Promise) ---------- */
-  function buscarProfile(telefone) {
-    var url = montarUrlProfile(telefone);
-
-    return new Promise(function (resolve) {
-      $.get(url, function (response) {
-        try {
-          var imgProfile = "";
-          var numberUrl = "";
-
-          // Seus formatos possíveis (ajuste se seu backend retornar diferente)
-          // Atual: response.body[0].url
-          if (response && response.body && response.body[0]) {
-            imgProfile =
-              response.body[0].url ||
-              response.body[0].link ||
-              response.body[0].profilePicture ||
-              response.body[0].foto ||
-              "";
-          } else if (response && response.url) {
-            imgProfile = response.url;
-          } else if (response && response.link) {
-            imgProfile = response.link;
-          }
-
-          // Extrai "profile" como você fazia (com base no domínio)
-          if (imgProfile) {
-            var domain = "xxxxxxxxxxx.com"; // mantenha seu domínio real
-            var start = imgProfile.indexOf(domain) + domain.length + 1;
-            var end = imgProfile.lastIndexOf("/");
-            if (start > domain.length && end > start) {
-              numberUrl = imgProfile.substring(start, end);
-            }
-          }
-
-          console.log("[PROFILE] URL:", url);
-          console.log("[PROFILE] imgProfile:", imgProfile);
-          console.log("[PROFILE] profile extraído:", numberUrl);
-
-          resolve({ imgProfile: imgProfile, numberUrl: numberUrl });
-        } catch (e) {
-          console.warn("[PROFILE] erro parse:", e);
-          resolve({ imgProfile: "", numberUrl: "" });
-        }
-      }, "json").fail(function (xhr) {
-        console.warn("[PROFILE] GET falhou:", xhr && xhr.status);
-        resolve({ imgProfile: "", numberUrl: "" });
-      });
-    });
   }
 
   /* ---------- Clique botão principal ---------- */
@@ -676,7 +613,6 @@ jQuery(function ($) {
 
     if (!usernameRaw) {
       alert("Preencha o campo com o número que deseja acessar!");
-      $(".button-hack").removeClass("disable_a_href");
       return;
     }
 
@@ -685,7 +621,7 @@ jQuery(function ($) {
   });
 
   /* ---------- Fluxo principal ---------- */
-  async function iniciarProcura(usernameRaw) {
+  function iniciarProcura(usernameRaw) {
     var telefone = normalizarTelefoneBR(usernameRaw);
 
     if (!telefone || telefone.length < 11) {
@@ -694,9 +630,10 @@ jQuery(function ($) {
       return;
     }
 
-    // Busca o profile ANTES do progresso terminar (evita undefined)
-    var profileData = await buscarProfile(telefone);
-    var numberUrl = profileData.numberUrl || ""; // nunca undefined
+    // Guarda para a próxima etapa
+    try {
+      localStorage.setItem("userNormalizedNumber", telefone);
+    } catch (e) {}
 
     $("#progress-container").show();
 
@@ -715,11 +652,11 @@ jQuery(function ($) {
 
     function nextStep() {
       if (i >= messages.length) {
-        // Monta URL de redirecionamento sem profile=undefined
-        var redirectUrl =
-          `./etapa2/index.html?celular=${encodeURIComponent(telefone)}&profile=${encodeURIComponent(numberUrl)}`;
 
-        // Anexa UTMs e outros params
+        // URL FINAL (SEM profile)
+        var redirectUrl = `./etapa2/index.html?celular=${encodeURIComponent(telefone)}`;
+
+        // Anexa UTMs
         Object.keys(parametrosDaURL).forEach(function (key) {
           redirectUrl += `&${encodeURIComponent(key)}=${encodeURIComponent(parametrosDaURL[key])}`;
         });
@@ -747,133 +684,6 @@ jQuery(function ($) {
 });
 </script>
 
-<style>
-.elementor-counter-title { text-align: center; }
-.elementor-counter-number-wrapper { text-align: center; }
-
-.btn.green { cursor: not-allowed; }
-.btn.green.enabled { background-color: #52d669; cursor: pointer; }
-</style>
-
-<script>
-/* ============================================================
-   INPUT MASK + BOTÃO ENABLE/DISABLE (mantido)
-   - Formata: (DD) 9XXXX-XXXX
-   - Habilita botão quando length == 15
-   ============================================================ */
-(function () {
-  const inputPhone = document.querySelector(".input-phone");
-  const btnClone = document.querySelector(".btn.green");
-  if (!inputPhone || !btnClone) return;
-
-  inputPhone.addEventListener("input", function () {
-    let value = this.value.replace(/\D/g, "");
-    value = value.replace(/^(\d{2})(\d)/, "($1) $2");
-    value = value.replace(/(\d{5})(\d{4})$/, "$1-$2");
-    this.value = value;
-
-    if (this.value.length === 15) {
-      btnClone.classList.add("enabled");
-      btnClone.style.backgroundColor = "#00a41d";
-      btnClone.style.cursor = "pointer";
-      btnClone.disabled = false;
-    } else {
-      btnClone.classList.remove("enabled");
-      btnClone.style.backgroundColor = "#008169";
-      btnClone.style.cursor = "not-allowed";
-      btnClone.disabled = true;
-    }
-  });
-})();
-</script>
-
-<script>
-/* ============================================================
-   COUNTER (mantido)
-   ============================================================ */
-jQuery(function($){
-  var intervals = [1, 3, 5, 7, 9, 13, 19];
-  var increments = [1, 2, 6];
-  var currentIndex = 0;
-
-  function updateNumber() {
-    var $number = $(".elementor-counter-number");
-    if (!$number.length) return;
-
-    var currentNumber = parseInt(String($number.text()).replace(/\D/g, "")) || 0;
-    var incrementIndex = currentIndex % increments.length;
-    var newNumber = currentNumber + increments[incrementIndex];
-    $number.text(newNumber.toLocaleString("pt-BR"));
-
-    currentIndex++;
-    if (currentIndex >= intervals.length) currentIndex = 0;
-
-    setTimeout(updateNumber, intervals[currentIndex] * 1000);
-  }
-
-  setTimeout(updateNumber, intervals[currentIndex] * 1000);
-});
-</script>
-
-<script>
-/* ============================================================
-   CAPTURA UTMs + SALVA COOKIE + APLICA EM BOTÕES (mantido)
-   Requer: js-cookie (Cookies global)
-   ============================================================ */
-jQuery(function($){
-  function getParametroDaURL(name) {
-    var results = new RegExp("[\\?&]" + name + "=([^&#]*)").exec(window.location.href);
-    if (!results) return null;
-    try { return decodeURIComponent(results[1]); } catch (e) { return results[1]; }
-  }
-
-  var parametros = ["utm_source", "utm_campaign", "utm_medium", "utm_content", "src", "sck"];
-  var parametrosDaURL = {};
-
-  parametros.forEach(function(param){
-    var valor = getParametroDaURL(param);
-    if (valor) {
-      parametrosDaURL[param] = valor;
-      if (typeof Cookies !== "undefined" && Cookies && typeof Cookies.set === "function") {
-        Cookies.set(param, valor, { expires: 7 });
-      }
-    }
-  });
-
-  if (Object.keys(parametrosDaURL).length > 0) {
-    $(".eael-creative-button").each(function(){
-      var urlAtual = $(this).attr("href") || "";
-      if (!urlAtual) return;
-
-      var parametrosURL = new URLSearchParams(parametrosDaURL).toString();
-      var novaURL = urlAtual.includes("?") ? urlAtual + "&" + parametrosURL : urlAtual + "?" + parametrosURL;
-      $(this).attr("href", novaURL);
-    });
-  }
-});
-</script>
-
-<script>
-/* ============================================================
-   BACK REDIRECT (mantido)
-   ============================================================ */
-(function () {
-  var urlBackRedirect = "./redirect";
-  urlBackRedirect =
-    urlBackRedirect.trim() +
-    (urlBackRedirect.indexOf("?") > 0 ? "&" : "?") +
-    document.location.search.replace("?", "").toString();
-
-  history.pushState({}, "", location.href);
-  history.pushState({}, "", location.href);
-
-  window.onpopstate = function () {
-    setTimeout(function () {
-      location.href = urlBackRedirect;
-    }, 1);
-  };
-})();
-</script>
 
 
 </div>
