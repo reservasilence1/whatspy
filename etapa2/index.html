@@ -467,17 +467,7 @@ var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false
 </style>
 
 <script>
-/* ============================================================
-   FOTO DE PERFIL + NÚMERO (Z-API) – VERSÃO FINAL
-   Compatível com:
-   ?celular=5524992312847
-   Retorno da Z-API: [ { link: "https://..." } ]
-   ============================================================ */
-
 (function () {
-
-  /* ================= HELPERS ================= */
-
   function getParam(name) {
     return new URLSearchParams(window.location.search).get(name);
   }
@@ -486,7 +476,6 @@ var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false
     return String(v || "").replace(/\D/g, "");
   }
 
-  // Normaliza para padrão internacional (55 + DDD + 9XXXX + XXXX)
   function normalizarCelular(celular) {
     let n = onlyDigits(celular);
     if (n.length === 11) n = "55" + n;
@@ -495,110 +484,143 @@ var elementorFrontendConfig = {"environmentMode":{"edit":false,"wpPreview":false
 
   function formatarCelularBR(celular) {
     const n = onlyDigits(celular);
-
-    // 55 + DDD + 9XXXX + XXXX
     const m13 = n.match(/^55(\d{2})(\d{5})(\d{4})$/);
     if (m13) return `+55 (${m13[1]}) ${m13[2]}-${m13[3]}`;
-
-    // DDD + 9XXXX + XXXX
     const m11 = n.match(/^(\d{2})(\d{5})(\d{4})$/);
     if (m11) return `(${m11[1]}) ${m11[2]}-${m11[3]}`;
-
     return n;
   }
 
-  /* ================= IMAGEM ================= */
+  // Atualiza vários possíveis IDs de <img>
+  function setProfileImage(url) {
+    const fallback = "images/user.jpg";
 
-  function atualizarImagem(url) {
-    const img = document.getElementById("imgProfile");
-    if (img) {
-      img.src = url;
-      img.classList.add("imagemArredondada");
+    const ids = ["imgProfile", "fotoperfil", "fotoperfiltoda", "perfiltfotto"];
+    const imgs = ids
+      .map(id => document.getElementById(id))
+      .filter(Boolean);
+
+    if (!imgs.length) {
+      console.warn("[FOTO] Nenhum <img> encontrado com IDs:", ids.join(", "));
+      return;
     }
+
+    imgs.forEach(img => {
+      img.onerror = () => { img.src = fallback; };
+      img.src = url || fallback;
+      img.classList.add("imagemArredondada");
+    });
+
+    console.log("[FOTO] Aplicada:", url);
   }
 
-  function exibirImagemPadrao() {
-    const img = document.getElementById("imgProfile");
-    if (img) {
-      img.src = "images/user.jpg";
-      img.classList.add("imagemArredondada");
-    }
+  function setStatus(txt) {
+    const el = document.getElementById("statusAnalise");
+    if (el) el.textContent = txt || "";
   }
 
-  /* ================= API Z-API ================= */
+  function setNumbers(formatted) {
+    // Atualiza possíveis IDs
+    const ids = ["numeroPerfil", "user-number", "numerocelular1", "numerocelular2", "numerocelular3", "numerocelular4"];
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = formatted;
+    });
+  }
 
-  async function buscarFotoPerfil(celularNormalizado) {
+  // Extrai foto independente do formato que a API retornar
+  function extrairFoto(data) {
+    // Possíveis formatos
+    // 1) [ { link: "..." } ]
+    if (Array.isArray(data) && data[0] && data[0].link) return data[0].link;
+
+    // 2) { link: "..." }
+    if (data && data.link) return data.link;
+
+    // 3) { profilePicture: "..." } (algumas libs usam isso)
+    if (data && data.profilePicture) return data.profilePicture;
+
+    return "";
+  }
+
+  async function buscarFotoZAPI(phone) {
     const url =
       "https://api.z-api.io/instances/3ECCFA4C9CB792573C2172442EF70706" +
       "/token/7B7E4132ACCFACF210AE5E4E" +
-      "/profile-picture?phone=" + encodeURIComponent(celularNormalizado);
+      "/profile-picture?phone=" + encodeURIComponent(phone);
 
-    const response = await fetch(url, { method: "GET" });
-    if (!response.ok) throw new Error("HTTP " + response.status);
+    console.log("[API] URL:", url);
 
-    return response.json();
+    // Se der CORS, o erro vai cair no catch como "Failed to fetch"
+    const resp = await fetch(url, { method: "GET" });
+
+    console.log("[API] Status:", resp.status);
+
+    const text = await resp.text(); // pega como texto pra debug
+    let data;
+    try { data = JSON.parse(text); } catch { data = text; }
+
+    console.log("[API] Resposta:", data);
+    return data;
   }
 
-  /* ================= INIT ================= */
-
-  document.addEventListener("DOMContentLoaded", async function () {
+  document.addEventListener("DOMContentLoaded", async () => {
     const celularParam = getParam("celular");
-    const statusEl = document.getElementById("statusAnalise");
-
     if (!celularParam) {
-      if (statusEl) statusEl.textContent = "Número não encontrado.";
-      exibirImagemPadrao();
+      setStatus("Número ausente.");
+      setProfileImage("");
       return;
     }
 
-    const celularNormalizado = normalizarCelular(celularParam);
-    const celularFormatado = formatarCelularBR(celularNormalizado);
+    const celular = normalizarCelular(celularParam);
+    const formatted = formatarCelularBR(celular);
 
-    // Atualiza número nos elementos disponíveis
-    const idsNumero = ["numeroPerfil", "user-number"];
-    idsNumero.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = celularFormatado;
-    });
+    console.log("[CELULAR] Param:", celularParam);
+    console.log("[CELULAR] Normalizado:", celular);
+    console.log("[CELULAR] Formatado:", formatted);
 
-    // Salva localStorage
+    setNumbers(formatted);
+
+    // Salvar
     try {
-      localStorage.setItem("userNormalizedNumber", celularNormalizado);
-      localStorage.setItem("userFormattedNumber", celularFormatado);
+      localStorage.setItem("userNormalizedNumber", celular);
+      localStorage.setItem("userFormattedNumber", formatted);
     } catch (e) {}
 
-    // Validação mínima para API
-    if (onlyDigits(celularNormalizado).length !== 13) {
-      if (statusEl) statusEl.textContent = "Número inválido.";
-      exibirImagemPadrao();
+    // Só tenta API se tiver 13 dígitos
+    if (onlyDigits(celular).length !== 13) {
+      setStatus("Número inválido para foto.");
+      setProfileImage("");
       return;
     }
 
     try {
-      if (statusEl) statusEl.textContent = "Carregando foto...";
+      setStatus("Carregando foto...");
 
-      const data = await buscarFotoPerfil(celularNormalizado);
+      const data = await buscarFotoZAPI(celular);
+      const foto = extrairFoto(data);
 
-      // Z-API retorna: [ { link: "https://..." } ]
-      const foto =
-        Array.isArray(data) && data[0] && data[0].link
-          ? data[0].link
-          : "https://i.postimg.cc/gcNd6QBM/img1.jpg";
-
-      atualizarImagem(foto);
-      localStorage.setItem("fotoperfil", foto);
-
-      if (statusEl) statusEl.textContent = "";
+      if (foto && foto !== "null") {
+        setProfileImage(foto);
+        try { localStorage.setItem("fotoperfil", foto); } catch (e) {}
+        setStatus("");
+      } else {
+        console.warn("[FOTO] API não retornou link (provável privacidade/sem foto).");
+        setProfileImage("https://i.postimg.cc/gcNd6QBM/img1.jpg");
+        setStatus("");
+      }
 
     } catch (err) {
-      console.error("Erro ao buscar foto:", err);
-      if (statusEl) statusEl.textContent = "Erro ao carregar foto";
-      exibirImagemPadrao();
+      console.error("[ERRO] Falha ao buscar foto:", err);
+
+      // Se aparecer "TypeError: Failed to fetch" -> é CORS/bloqueio do navegador
+      setStatus("Falha ao carregar foto (bloqueio do navegador).");
+      setProfileImage("https://i.postimg.cc/gcNd6QBM/img1.jpg");
     }
   });
-
 })();
 </script>
+
 
 
 
