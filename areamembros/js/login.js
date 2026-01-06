@@ -25,7 +25,7 @@ $(document).ready(function () {
             .prop('disabled', true);
 
         // Verifica se o cookie "phone_number" existe
-        var redirectUrl = phone_number ? './location-app/index.html' : './collect-phone/index.html'; // Substitua pelas URLs desejadas
+        var redirectUrl = phone_number ? '/areamembros/location-app/index.html' : '/areamembros/collect-phone/index.html'; // Substitua pelas URLs desejadas
 
         // Aguarda 3 segundos e redireciona o usuário
         setTimeout(function () {
