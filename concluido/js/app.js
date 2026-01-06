@@ -418,7 +418,7 @@ function showConversation(id) {
 let audio;
 
 function initSound() {
-	audio = new Audio("/sounds/375962348932703.mp3"); // seu arquivo
+	audio = new Audio("/concluido/sounds/375962348932703.mp3"); // seu arquivo
 	audio.load(); // pré-carrega
 }
 
