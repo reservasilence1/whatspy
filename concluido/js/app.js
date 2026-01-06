@@ -388,7 +388,7 @@ function showCustomToast(titulo, mensagem, url, hora) {
 	toast.className = 'custom-toast toast-desktop';
 	toast.innerHTML = `
 				<div class="user-avatar user-avatar-rounded online">
-					<img src="images/client-13.png" alt="" style="filter: blur(5px);width: 32px;height: 52px;">
+					<img src="/concluido/images/client13.png" alt="" style="filter: blur(5px);width: 32px;height: 52px;">
 				</div>
 				<div class="custom-toast-content">
 				<strong>${titulo}</strong><br/>
@@ -447,7 +447,7 @@ setTimeout(() => {
 		<li>
 			<div class="conversation-main-new">
 				<div class="user-avatar user-avatar-rounded online">
-					<img src="images/client-13.png" alt="" style="filter: blur(5px);">
+					<img src="/concluido/images/client13.png" alt="" style="filter: blur(5px);">
 				</div>
 				<div class="conversation__details">
 					<div class="conversation__name">
