@@ -1,31 +1,36 @@
 export default async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-
-  if (req.method !== "GET") return res.status(405).json({ error: "Método não permitido" });
-
-  const transactionId = String(req.query.transactionId || "").trim();
-  if (!transactionId) return res.status(400).json({ error: "transactionId é obrigatório" });
-
   try {
-    const KEY =
-      "vkf5TMM12Qn32cTNDGV-yhIaKC6tEYDIPu2SFKHNKNYgl_s7JZg4sArNGdWpnF4PtBeiz5FV2-kWigfJsU3vNA";
+    const phoneRaw = (req.query.phone || "").toString();
+    const phone = phoneRaw.replace(/\D/g, "");
 
-    const url =
-      `https://app.duttyfy.com.br/api-pix/${KEY}?transactionId=` + encodeURIComponent(transactionId);
-
-    const r = await fetch(url);
-    const text = await r.text();
-
-    let json;
-    try {
-      json = JSON.parse(text);
-    } catch {
-      return res.status(502).json({ error: "Resposta inválida da API", raw: text });
+    if (phone.length < 11) {
+      return res.status(400).json({ ok: false, error: "Número inválido" });
     }
 
-    return res.status(r.status || 200).json(json);
-  } catch (e) {
-    return res.status(500).json({ error: "Erro ao verificar status" });
+    const instance = process.env.ZAPI_INSTANCE;
+    const token = process.env.ZAPI_TOKEN;
+    const clientToken = process.env.ZAPI_CLIENT_TOKEN;
+
+    if (!instance || !token || !clientToken) {
+      return res.status(500).json({ ok: false, error: "ENV da Z-API não configurada" });
+    }
+
+    const url = `https://api.z-api.io/instances/${instance}/token/${token}/phone-exists/${phone}`;
+
+    const r = await fetch(url, {
+      method: "GET",
+      headers: {
+        "content-type": "application/json",
+        "client-token": clientToken,
+      },
+    });
+
+    const text = await r.text();
+    let data;
+    try { data = JSON.parse(text); } catch { data = { raw: text }; }
+
+    return res.status(r.status).json({ ok: r.ok, ...data });
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: "Erro interno", details: String(err?.message || err) });
   }
 }
-
