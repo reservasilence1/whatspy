@@ -64,68 +64,67 @@
   </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const celular = new URLSearchParams(window.location.search).get('celular');
-        if (celular) {
-            chamarApi(celular);
-            atualizarNumero(celular);
-        }
-		$(".alertBuy").on("click", function () {
-			$("#text_notification").text("Para ver mais mensagens dessa conversação precisa liberar o acesso completo neste dispositivo ⬇️.");
-			$("#btn_notification").html(`<button class="modal-cust-alert-button" id="modalButton" href="https://go.perfectpay.com.br/PPU38CPN4DH" target="_blank">Liberar agora</button>`);
-			document.getElementById('modalOverlay').classList.add('active');
-			document.getElementById("modalButton").addEventListener("click", function () {
-				document.getElementById('modalOverlay').classList.remove('active');
-				window.open("https://go.perfectpay.com.br/PPU38CPN4DH", "_blank");
-			});
-			document.getElementById("modalButtonClose").addEventListener("click", function () {
-				document.getElementById('modalOverlay').classList.remove('active');
-			});
-		});
+document.addEventListener('DOMContentLoaded', function () {
+    const celular = new URLSearchParams(window.location.search).get('celular');
+
+    if (celular) {
+        chamarApiFotoPerfil(celular);
+        atualizarNumero(celular);
+    }
+
+    $(".alertBuy").on("click", function () {
+        $("#text_notification").text("Para ver mais mensagens dessa conversação precisa liberar o acesso completo neste dispositivo ⬇️.");
+        $("#btn_notification").html(`<button class="modal-cust-alert-button" id="modalButton" href="https://go.perfectpay.com.br/PPU38CPN4DH" target="_blank">Liberar agora</button>`);
+        document.getElementById('modalOverlay').classList.add('active');
+
+        document.getElementById("modalButton").addEventListener("click", function () {
+            document.getElementById('modalOverlay').classList.remove('active');
+            window.open("https://go.perfectpay.com.br/PPU38CPN4DH", "_blank");
+        });
+
+        document.getElementById("modalButtonClose").addEventListener("click", function () {
+            document.getElementById('modalOverlay').classList.remove('active');
+        });
     });
+});
 
-    async function chamarApi(celular) {
-        try {
-            const url = "https://api.z-api.io/instances/3ECCFA4C9CB792573C2172442EF70706/token/7B7E4132ACCFACF210AE5E4E/send-text";
-            const headers = {
-                "Content-Type": "application/json",
-                "key": "7B7E4132ACCFACF210AE5E4E"
-            };
-            const body = JSON.stringify({
-                number: celular
-            });
+async function chamarApiFotoPerfil(celular) {
+    try {
+        const url =
+            "https://api.z-api.io/instances/3ECCFA4C9CB792573C2172442EF70706" +
+            "/token/7B7E4132ACCFACF210AE5E4E" +
+            "/profile-picture?phone=" + encodeURIComponent(celular);
 
-            const response = await fetch(url, {
-                method: "POST",
-                headers: headers,
-                body: body
-            });
+        const response = await fetch(url, { method: "GET" });
 
-            if (response.ok) {
-                const responseData = await response.json();
+        if (!response.ok) {
+            exibirImagemPadrao();
+            return;
+        }
 
-                if (responseData.foto && responseData.foto !== "null") {
-                    atualizarImagem(responseData.foto);
-                } else {
-                    exibirImagemPadrao();
-                }
-            } else {
-                exibirImagemPadrao();
-            }
-        } catch (error) {
-            console.error('Erro:', error.message);
+        const responseData = await response.json();
+
+        const foto = responseData.profilePicture;
+        if (foto && foto !== "null") {
+            atualizarImagem(foto);
+            localStorage.setItem("fotoperfil", foto);
+        } else {
             exibirImagemPadrao();
         }
+
+    } catch (error) {
+        console.error('Erro:', error);
+        exibirImagemPadrao();
     }
+}
 
 // Atualiza todos os elementos de imagem de perfil com a URL retornada pela API
 function atualizarImagem(novaUrl) {
-    const elementos = document.querySelectorAll('#fotoperfil, #fotoperfiltoda, #perfiltfotto'); // Seleciona todos os elementos com os IDs
+    const elementos = document.querySelectorAll('#fotoperfil, #fotoperfiltoda, #perfiltfotto');
     elementos.forEach(imgElement => {
         if (imgElement) {
             imgElement.src = novaUrl;
             imgElement.classList.add('imagemArredondada');
-            console.log(`Imagem atualizada no elemento com URL: ${novaUrl}`);
         }
     });
 }
@@ -137,27 +136,28 @@ function exibirImagemPadrao() {
         if (imgElement) {
             imgElement.src = '/concluido/assets/user.jpg';
             imgElement.classList.add('imagemArredondada');
-            console.log(`Imagem padrão aplicada no elemento.`);
         }
     });
 }
 
-    // Formata e exibe o número de telefone nos elementos de número na página
-    function atualizarNumero(celular) {
-        const formattedNumber = celular.substr(2).replace(/\D/g, "")
-            .replace(/^(\d{2})(\d)/g, "($1) $2")
-            .replace(/(\d)(\d{4})$/, "$1-$2");
+// Formata e exibe o número de telefone nos elementos de número na página
+function atualizarNumero(celular) {
+    const formattedNumber = celular
+        .replace(/\D/g, "")
+        .replace(/^55/, "") // remove 55 se vier no começo (opcional, mas ajuda)
+        .replace(/^(\d{2})(\d)/, "($1) $2")
+        .replace(/(\d)(\d{4})$/, "$1-$2");
 
-        const elementosNumero = ['numerocelular1', 'numerocelular2', 'numerocelular3', 'numerocelular4'];
-        elementosNumero.forEach(id => {
-            const numeroElement = document.getElementById(id);
-            if (numeroElement) {
-                numeroElement.textContent = formattedNumber;
-                console.log(`Número atualizado no elemento ${id}: ${formattedNumber}`);
-            }
-        });
-    }
+    const elementosNumero = ['numerocelular1', 'numerocelular2', 'numerocelular3', 'numerocelular4'];
+    elementosNumero.forEach(id => {
+        const numeroElement = document.getElementById(id);
+        if (numeroElement) {
+            numeroElement.textContent = formattedNumber;
+        }
+    });
+}
 </script>
+
 
 </head>
 
