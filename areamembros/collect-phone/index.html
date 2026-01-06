@@ -1,0 +1,275 @@
+<!DOCTYPE html><html lang="pt-br">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boas-Vindas</title>
+    <!-- Bootstrap CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="css/font-awesome.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+
+    
+
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background: url('images/bg1.avif') no-repeat center center fixed;
+            background-size: cover;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+        .app-container {
+            background: #ffffff17;
+            border-radius: 10px;
+            width: 100%;
+        }
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+        .hidden {
+            display: none;
+        }
+        .poppins-medium {
+            font-family: "Poppins", serif;
+            font-weight: 500;
+            font-style: normal;
+        }
+        .monospace {
+            font-family: monospace;
+        }
+        .title-large {
+            font-size: 28px;
+        }
+        .title-medium {
+            font-size: 20px;
+        }
+        .p-14 {
+            font-size: 14px;
+        }
+        .p-12 {
+            font-size: 12px;
+        }
+
+        .font-weight-700 {
+            font-weight: 700;
+        }
+
+        .text-grey {
+            color: grey;
+            text-decoration: none;
+        }
+        a {
+            text-decoration: none;
+        }
+
+        iframe {
+            height: 103vh;
+        }
+
+        h2.title-large.monospace {
+            font-weight: 700;
+        }
+
+
+        .container.part-1.InitialMapDiv {
+            background: whitesmoke;
+            color: black;
+            padding: 10px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -60%);
+            width: 90% !important;
+            z-index: 999;
+            border-radius: 12px;
+        }
+
+        .col-12.w-100.PointMap {
+            background: #333;
+            color: whitesmoke;
+            padding: 10px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -123%);
+            width: 55% !important;
+            z-index: 999;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+        }
+
+
+        i.fa.fa-check-circle.text-success {
+            font-size: 1.3rem;
+        }
+        
+        .list-group-item {
+            background-color: transparent !important;
+            border: 0;
+        }
+
+        .progress-text {
+            margin-left: 8px;
+        }
+        
+        .progress.text-center.part-1 {
+            max-height: 250px;
+            overflow: auto;
+            height: 215px;
+        }
+        
+        .spinner-border {
+            --bs-spinner-width: 1.3rem;
+            --bs-spinner-height: 1.3rem;
+        }
+
+        .lottie-animation {
+            display: flex  ;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+    </style>
+</head>
+<body>
+    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+
+    <div class="w-100 part-1" style="height: 100vh;">
+        <iframe id="brasil" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31792407.50740518!2d-73.11335380800553!3d-13.417952204537343!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9c59c7ebcc28cf%3A0x295a1506f2293e63!2sBrasil!5e0!3m2!1spt-BR!2sbr!4v1731426273897!5m2!1spt-BR!2sbr" width="100%" height="auto" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+
+    <div class="container part-1 InitialMapDiv">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="app-container text-center p-">
+                    <div class="text-center">
+                        <div class="lottie-animation">
+                            <!-- <dotlottie-player
+                                src="https://lottie.host/4b0366bc-78ce-491f-86fc-72b434317808/KBi9LZZzWj.lottie"
+                                background="transparent"
+                                speed="1"
+                                style="width: 500px; height: 500px"
+                                loop
+                                autoplay>
+                            </dotlottie-player> -->
+
+                            <dotlottie-player
+                                src="https://lottie.host/8ae1907d-7f6b-42c8-a25f-9aeeb0991c88/o8bL0biY0A.lottie"
+                                background="transparent"
+                                speed="1"
+                                style="width: 300px; height: 300px"
+                                loop
+                                autoplay>
+                            </dotlottie-player>
+                        </div>                                          
+                        <h2 class="title-medium monospace">Digite o numero que deseja rastrear 👇</h2>
+                        <form class="form">
+                            <input class="form-control text-center" type="text" placeholder="(XX) XXXXX-XXXX" aria-label="default input example">
+                            <button type="submit" class="btn btn-success mt-2">Rastrear</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container p-0 part-2 hidden">
+        <div class="row justify-content-center">
+            <div class="col-md-8 p-0">
+                <div class="app-container text-center p-0">
+
+                        
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer p-12 text-grey">
+        <p>Ferramenta Atualizada:<br> <b class="descounttime">-</b></p>
+        <p>� 2024 Todos os direitos reservados.</p>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="js/bootstrap.min.js" type="text/javascript"></script>
+    <!-- jQuery -->
+    <script src="js/jquery-3.6.0.min.js" type="text/javascript"></script>
+    
+    <script src="js/jquery.mask.min.js" type="text/javascript"></script>
+
+
+
+
+<!-- Custom JS -->
+
+
+<script language="javascript" type="text/javascript">
+    var getdayNames = new Array("Domingo", "Segunda-Feira", "Terça-Feira", "Quarta-Feira","Quinta-Feira", "Sexta-Feira", "Sábado");
+    var getdayMonth = new Array("Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho","Agosto", "Setembro", "Outubro", "Novembro", "Dezembro");
+    var getNow = new Date();
+    var dayOfTheWeek = getNow.getDay();
+    getNow.setTime(getNow.getTime() - 0 * 24 * 60 * 60 * 1000);
+    var value = getdayNames[(getNow.getDay())] + ", " + getNow.getDate() + " de " + getdayMonth[(getNow.getMonth())] + " " + " de " + getNow.getFullYear();
+    $(".descounttime").html(value);
+</script>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Função para aplicar a máscara manualmente
+        function applyMask(phoneNumber) {
+            var maskedPhone = phoneNumber.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+            return maskedPhone;
+        }
+
+        // Aplica a máscara ao input
+        $('input[type="text"]').mask('(00) 00000-0000');
+
+        // Evento de submit no formulário
+        $('form').on('submit', function (e) {
+            e.preventDefault(); // Previne o envio padrão do formulário
+
+            // Captura o número de telefone do input
+            var phoneNumber = $('input[type="text"]').val();
+
+            // Remove espaços e caracteres não numéricos
+            var numericPhone = phoneNumber.replace(/\D/g, '');
+
+            // Validação para aceitar de 10 a 11 dígitos
+            if (numericPhone.length < 10 || numericPhone.length > 11) {
+                alert('Por favor, insira um número válido com 10 ou 11 dígitos.');
+                return;
+            }
+
+            // Aplica a máscara manualmente
+            var maskedPhone = applyMask(numericPhone);
+
+            // Salva o número de telefone nos cookies
+            localStorage.setItem('phone_number', maskedPhone);
+
+            // Exibe no console (opcional) e redireciona para outra página
+            console.log('Número salvo no cookie com path "/":', localStorage.getItem('phone_number'));
+
+            // Redireciona para outra página
+            window.location.href = '../location-app/index.html'; // Substitua pela URL desejada
+        });
+    });
+</script>
+
+
+</body>
+</html>
