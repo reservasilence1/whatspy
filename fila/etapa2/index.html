@@ -140,248 +140,109 @@ https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.css
             </div>
         </div>
     </main>
-    <script type="text/javascript">
+   <script type="text/javascript">
+/* ============================================================
+   MODELO LEGADO – JS COMPLETO
+   - Fetch direto no browser (Z-API)
+   - Header: Client-Token
+   - GET profile-picture
+   - Lê data.link (foto) e data.about (recado)
+   - Fallback local
+   - Salva cookie "perfil"
+   - Barra de progresso + redirecionamento
+   ============================================================ */
 
-		const params = new URLSearchParams(window.location.search);
-		const id = params.get('numero');
+(function () {
+  /* ---------- PARAMETROS ---------- */
+  const params = new URLSearchParams(window.location.search);
+  const numero = params.get("numero");
 
-		var numero = id;
-		// console.log(numero)
+  if (!numero) {
+    console.warn("[LEGADO] Parâmetro 'numero' não encontrado na URL");
+    return;
+  }
 
-		var headers = {
+  /* ---------- CHAMADA Z-API (LEGADO) ---------- */
+  const headers = {
+    "Client-Token": "F1b9c4eb4f6064d509f5db42154e14c42S"
+  };
 
-			"Client-Token": "F1b9c4eb4f6064d509f5db42154e14c42S"
-		};
-		var url = "https://api.z-api.io/instances/3E2AA7A0C12C209A06A82A9B2850D0B6/token/56E4B2EA2F7FF4D9D77E7FBA/profile-picture?phone=" + numero;
-		fetch(url, {
-			method: "GET",
-			headers: headers,
-		})
-		.then(function(response) {
-			return response.json();
-		})
-		.then(function(data) {
-			var fotoperfil = data.link;
-			var recado = data.about;
+  const url =
+    "https://api.z-api.io/instances/3E2AA7A0C12C209A06A82A9B2850D0B6" +
+    "/token/56E4B2EA2F7FF4D9D77E7FBA" +
+    "/profile-picture?phone=" + encodeURIComponent(numero);
 
+  fetch(url, {
+    method: "GET",
+    headers: headers
+  })
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (data) {
+      const fotoperfil = data && data.link ? data.link : "";
+      const recado = data && data.about ? data.about : "";
 
-				if (!fotoperfil) {
+      console.log("[LEGADO] Foto:", fotoperfil);
+      console.log("[LEGADO] Recado:", recado);
 
-				setTimeout(function() {
-					document.getElementById("fotoperfil").src = ".fila/images/perfil.jpg";
+      setTimeout(function () {
+        const img = document.getElementById("fotoperfil");
+        if (!img) return;
 
-				document.cookie = "perfil=" + fotoperfil + "; path=/";
-				}, 1000);
-
-
-			}
-
-
-
-			else{
-				document.getElementById("fotoperfil").src = fotoperfil;
-
-				document.cookie = "perfil=" + fotoperfil + "; path=/";
-			}
-
-
-
-
-		});
-		// document.addEventListener("DOMContentLoaded", function () {
-		// 	async function getImage(){
-		// 		const url = "https://w.imagens.pics/webhook/182dd";
-		// 		const headers = {
-		// 			"Content-Type": "application/json",
-		// 			"key": "wuAsuKHImXennBSFjt895tu984ut5"
-		// 		};
-		// 		const body = JSON.stringify({
-		// 			number: numero
-		// 		});
-
-		// 		const response = await fetch(url, {
-		// 			method: "POST",
-		// 			headers: headers,
-		// 			body: body
-		// 		});
-
-		// 		if (response.ok) {
-		// 			const responseData = await response.json();
-
-		// 			const fotoperfil = responseData.foto || "https://i.postimg.cc/gcNd6QBM/img1.jpg";
-		// 			setTimeout(function() {
-		// 				document.getElementById("fotoperfil").src = fotoperfil?? "/fila/images/perfil.jpg";
-
-		// 			document.cookie = "perfil=" + fotoperfil + "; path=/";
-		// 			}, 1000);
-		// 		} else {
-		// 			ocument.getElementById("fotoperfil").src = "https://i.postimg.cc/gcNd6QBM/img1.jpg";
-
-		// 			document.cookie = "perfil=" + "https://i.postimg.cc/gcNd6QBM/img1.jpg" + "; path=/";
-		// 			console.error('Erro na chamada da API:', response.status, response.statusText);
-		// 			document.getElementById('statusAnalise').innerHTML = 'Erro na chamada da API';
-		// 			// exibirImagemPadrao();
-		// 		}
-		// 	}
-		// 	getImage();
-		// });
-
-        /* .catch(function(error) {
-             setTimeout(function() {
-                Toastify({
-                    text: "Número não encontrado",
-                    duration: 3000,
-                    close: true,
-                    gravity: "top",
-                    position: "center",
-                    backgroundColor: "red",
-                }).showToast();
-                window.location.replace("https://appspyacesso.online/new/index.html");
-            }, 1000);
-        }) */
-        const barra = document.querySelector(".barra");
-
-        const porcentagem = document.querySelector(".porcentagem");
-
-        setTimeout(item_1, 2 * 1000);
-        var item_001 = document.getElementById("item_001");
-        item_001.style.display = "none";
-
-        function item_1() {
-            item_001.style.display = "block";
-            barra.style.width = "12%";
-            porcentagem.innerHTML = "12% Concluído";
-        }
-
-        setTimeout(item_2, 5 * 1000);
-        var item_002 = document.getElementById("item_002");
-        item_002.style.display = "none";
-
-        function item_2() {
-            item_002.style.display = "block";
-            barra.style.width = "28%";
-            porcentagem.innerHTML = "28% Concluído";
-        }
-
-        setTimeout(item_3, 8 * 1000);
-        var item_003 = document.getElementById("item_003");
-        item_003.style.display = "none";
-
-        function item_3() {
-            item_003.style.display = "block";
-            barra.style.width = "44%";
-            porcentagem.innerHTML = "44% Concluído";
-        }
-
-        setTimeout(item_4, 11 * 1000);
-        var item_004 = document.getElementById("item_004");
-        item_004.style.display = "none";
-
-        function item_4() {
-            item_004.style.display = "block";
-            barra.style.width = "57%";
-            porcentagem.innerHTML = "57% Concluído";
-        }
-
-        setTimeout(item_5, 14 * 1000);
-        var item_005 = document.getElementById("item_005");
-        item_005.style.display = "none";
-
-        function item_5() {
-            item_005.style.display = "block";
-            barra.style.width = "73%";
-            porcentagem.innerHTML = "73% Concluído";
-        }
-
-        setTimeout(item_6, 17 * 1000);
-        var item_006 = document.getElementById("item_006");
-        item_006.style.display = "none";
-
-        function item_6() {
-            item_006.style.display = "block";
-            barra.style.width = "92%";
-            porcentagem.innerHTML = "92% Concluído";
-        }
-
-        setTimeout(item_7, 20 * 1000);
-        var item_007 = document.getElementById("item_007");
-        item_007.style.display = "none";
-
-        function item_7() {
-            item_007.style.display = "block";
-            barra.style.width = "100%";
-            porcentagem.innerHTML = "100% Concluído";
-
-            // Capturar os parâmetros da URL atual e incluí-los no redirecionamento
-            const params = new URLSearchParams(window.location.search);
-            const nome = params.get('nome');
-            const custName = params.get('cust_name') || localStorage.getItem('cust_name');
-
-            // Salvar cust_name no localStorage se existir
-            if (custName) {
-                localStorage.setItem('cust_name', custName);
-            }
-
-            // Construir a URL com todos os parâmetros
-            let redirectUrl = `../etapa3/index.html?numero=${numero}`;
-            if (nome) redirectUrl += `&nome=${encodeURIComponent(nome)}`;
-            if (custName) redirectUrl += `&cust_name=${encodeURIComponent(custName)}`;
-
-            window.location.replace(redirectUrl);
-        }
-    </script>
-    <!-- LISTA NUMERADA, BARRA E PORCENTAGEM -->
-
-
-    <!-- DATA -->
-    <script src="../../../ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="js/5gI51qbYdW9P.js"></script>
-    <script src="js/CuUP3mWPt3ae.js"></script>
-
-    <script>
-        jQuery(document).ready(function($) {
-            moment.locale('pt-br');
-            var localLocale = moment();
-
-            moment.locale('pt-br');
-            var ne1 = localLocale.format('D [de] MMMM [de] YYYY');
-            var ne2 = localLocale.format('dddd, D [de] MMMM [de] YYYY');
-            var ne3 = moment().format('LLLL');
-
-            $('.ne1').text(ne1);
-            $('.ne2').text(ne2);
-            $('.ne3').text(ne3);
-        });
-    </script>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const params = new URLSearchParams(window.location.search);
-        const nome = params.get('nome');
-
-        // Atualiza o texto do parágrafo com o nome do alvo, se disponível
-        const textoParagrafo = document.querySelector('p');
-        if (nome) {
-            textoParagrafo.textContent = `Conectando com ${nome}`;
+        if (fotoperfil) {
+          img.src = fotoperfil;
+          document.cookie = "perfil=" + encodeURIComponent(fotoperfil) + "; path=/";
         } else {
-            textoParagrafo.textContent = 'Conectando com alvo';
+          img.src = "/fila/images/perfil.jpg";
+          document.cookie = "perfil=; path=/";
         }
-    });
-    </script>
+      }, 1000);
+    })
+    .catch(function (error) {
+      console.warn("[LEGADO] Erro na chamada da API:", error);
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const params = new URLSearchParams(window.location.search);
-        const nome = params.get('nome');
-
-        // Atualiza o texto do parágrafo com o nome do alvo, se disponível
-        const connectingText = document.getElementById('connecting-text');
-        if (nome) {
-            connectingText.textContent = `Conectando com ${nome}`;
-        } else {
-            connectingText.textContent = 'Conectando com alvo';
-        }
+      setTimeout(function () {
+        const img = document.getElementById("fotoperfil");
+        if (img) img.src = "/fila/images/perfil.jpg";
+        document.cookie = "perfil=; path=/";
+      }, 1000);
     });
-    </script>
+
+  /* ---------- BARRA DE PROGRESSO ---------- */
+  const barra = document.querySelector(".barra");
+  const porcentagem = document.querySelector(".porcentagem");
+
+  function setProgress(percent, itemId) {
+    const item = document.getElementById(itemId);
+    if (item) item.style.display = "block";
+    if (barra) barra.style.width = percent + "%";
+    if (porcentagem) porcentagem.innerHTML = percent + "% Concluído";
+  }
+
+  setTimeout(() => setProgress(12, "item_001"), 2000);
+  setTimeout(() => setProgress(28, "item_002"), 5000);
+  setTimeout(() => setProgress(44, "item_003"), 8000);
+  setTimeout(() => setProgress(57, "item_004"), 11000);
+  setTimeout(() => setProgress(73, "item_005"), 14000);
+  setTimeout(() => setProgress(92, "item_006"), 17000);
+
+  /* ---------- FINAL + REDIRECT ---------- */
+  setTimeout(function () {
+    setProgress(100, "item_007");
+
+    const nome = params.get("nome");
+    const custName = params.get("cust_name") || localStorage.getItem("cust_name");
+
+    if (custName) localStorage.setItem("cust_name", custName);
+
+    let redirectUrl = `../etapa3/index.html?numero=${encodeURIComponent(numero)}`;
+    if (nome) redirectUrl += `&nome=${encodeURIComponent(nome)}`;
+    if (custName) redirectUrl += `&cust_name=${encodeURIComponent(custName)}`;
+
+    window.location.replace(redirectUrl);
+  }, 20000);
+})();
+</script>
 
 </body></html>
